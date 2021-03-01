@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+.vs/
+*.kdev4
+kdev4/
+doc/
+**/doc
+**/__pycache__
+*~
+*.user
+*.user*
+*.json
+
+*.pyc

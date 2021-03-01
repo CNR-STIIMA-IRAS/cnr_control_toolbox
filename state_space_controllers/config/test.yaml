@@ -1,0 +1,19 @@
+ss:
+  A:
+  - [0, 1]
+  - [0, 0]
+  B:
+  - [0]
+  - [1]
+  C:
+  - [1, 0]
+  D:
+  - [0]
+
+filter:
+  frequency: 5 # [Hz]
+  sampling_period: 0.01 # [s]
+
+
+ctrl1: {type: "proportional", proportional_gain: 5.0}
+ctrl2: {type: "PI", proportional_gain: 1, integral_gain: 1, sample_period: 8.0e-3}

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>state_space_ros</name>
+  <version>0.0.0</version>
+  <description>The state_space_ros package</description>
+
+  <maintainer email="feymann@todo.todo">feymann</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://XXXXXXXXXXXXXXXXXXXX/state_space_systems</url>
+
+  <author email="manuel.beschi@itia.cnr.it">Manuel Beschi</author>
+  <author email="stefano.ghidini@itia.cnr.it">Stefano Ghidini</author>
+  <author email="enrico.villagrossi@itia.cnr.it">Enrico Villagrossi (former author)</author>
+  
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>state_space_systems</build_depend>
+  <build_depend>state_space_controllers</build_depend>
+  <build_depend>state_space_filters</build_depend>
+  <build_export_depend>state_space_systems</build_export_depend>
+  <build_export_depend>state_space_controllers</build_export_depend>
+  <build_export_depend>state_space_filters</build_export_depend>
+  <exec_depend>state_space_systems</exec_depend>
+  <exec_depend>state_space_controllers</exec_depend>
+  <exec_depend>state_space_filters</exec_depend>
+
+  <build_depend>eigen_matrix_utils</build_depend>
+  <build_depend>rosparam_utilities</build_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>eigen_matrix_utils</exec_depend>
+  <exec_depend>rosparam_utilities</exec_depend>
+  <exec_depend>rostest</exec_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
