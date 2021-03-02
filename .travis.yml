@@ -5,7 +5,6 @@ dist: bionic
 branches:
   only:
   - master
-  - nicola
 
 jobs:
   include:
