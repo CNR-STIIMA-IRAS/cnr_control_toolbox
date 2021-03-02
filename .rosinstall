@@ -1,9 +1,9 @@
 - git:
-    local-name: eigen_utils
+    local-name: rosparam_utilities
     uri: https://github.com/CNR-STIIMA-IRAS/rosparam_utilities
 - git:
     local-name: eigen_utils
     uri: https://github.com/CNR-STIIMA-IRAS/eigen_utils
 - git:
-    local-name: eigen_control_toolbox
-    uri: https://github.com/CNR-STIIMA-IRAS/eigen_control_toolbox
+    local-name: cnr_control_toolbox
+    uri: https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox
