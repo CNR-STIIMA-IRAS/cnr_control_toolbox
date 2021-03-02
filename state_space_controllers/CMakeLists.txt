@@ -20,8 +20,7 @@ endif()
 
 
 catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES state_space_controllers
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   CATKIN_DEPENDS eigen_matrix_utils state_space_systems
 )
 

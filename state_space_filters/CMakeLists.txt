@@ -20,19 +20,14 @@ endif()
 
 
 catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES state_space_controllers
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   CATKIN_DEPENDS eigen_matrix_utils state_space_systems
 )
 
 ###########
 ## Build ##
 ###########
-include_directories(
- include
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
-)
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 #############
 ## Install ##

@@ -20,7 +20,7 @@ endif()
 
 
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   CATKIN_DEPENDS eigen_matrix_utils
   DEPENDS
 )
