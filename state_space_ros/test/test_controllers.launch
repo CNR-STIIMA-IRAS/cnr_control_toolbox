@@ -30,9 +30,9 @@
   <arg     if="$(arg debug)" name="launch_prefix"
       value="valgrind -v --track-origins=yes --tool=memcheck --leak-check=full --show-reachable=yes  --num-callers=20 --track-fds=yes  --log-file=/home/feymann/a.txt" />
   <test launch-prefix="$(arg launch_prefix)" 
-            pkg="state_space_systems"
+            pkg="state_space_ros"
             type="test_controllers"
-            test-name="test_controllers">
+            test-name="state_space_ros_test_controllers">
   </test>
 </group>
 
@@ -40,8 +40,8 @@
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
   <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
   <test launch-prefix="$(arg launch_prefix)" 
-            pkg="state_space_systems"
-            type="test_controllers"
+            pkg="state_space_ros"
+            type="state_space_ros_test_controllers"
             test-name="test_controllers">
   </test>
 </group>

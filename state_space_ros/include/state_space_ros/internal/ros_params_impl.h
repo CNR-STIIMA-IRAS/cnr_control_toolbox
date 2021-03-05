@@ -9,6 +9,17 @@
 namespace eigen_control_toolbox
 {
 
+inline std::string to_string(const std::string& what, const bool& ret, const std::string& msg)
+{
+  return what + (what.size()>0?"\n":"") +
+    ( ret ? (msg.size()==0? "" : "[?]" + msg) : "[!]" + msg);
+}
+
+inline std::string dim(const Eigen::MatrixXd& m)
+{
+  return "(" + std::to_string(eu::rows(m)) +"x"+std::to_string(eu::cols(m)) + ")";
+}
+
 inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
                                     const std::string&      name,
                                     Eigen::MatrixXd&        A,
@@ -17,6 +28,7 @@ inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
                                     Eigen::MatrixXd&        D,
                                     std::string&            what)
 {
+  what="";
   std::string type = "state-space";
   if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
   {
@@ -62,45 +74,39 @@ inline int setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
                               const std::string& name,
                                 std::string& what)
 {
+  what="";
   Eigen::MatrixXd A;
   Eigen::MatrixXd B;
   Eigen::MatrixXd C;
   Eigen::MatrixXd D;
 
-  if(!importMatricesFromParam(nh, name, A,B,D,D, what))
+  std::string msg;
+  bool ok = importMatricesFromParam(nh, name, A,B,D,D, msg);
+  what = to_string(what, ok,msg);
+  if(!ok)
   {
-     return false;
+     return -1;
   }
 
   int num_s = eu::rows(A);
-  if(num_s!=eu::rows(A))
-  {
-    what += "Matrix A is not a sqare-matrix";
-    return false;
-  }
-  if(num_s!=eu::rows(B))
-  {
-    what += "The number of rows of Matrix B is different from the number of rows of Matrix A.";
-    return false;
-  }
-  if(num_s!=eu::cols(C))
-  {
-    what += "The number of cols of Matrix C is different from the number of rows of Matrix A.";
-    return false;
-  }
-
   int num_i = eu::cols(B);
-  if(num_i!=eu::cols(D))
-  {
-    what += "The number of cols of Matrix D is different from the number of cols of Matrix B.";
-    return false;
-  }
-
   int num_o = eu::rows(C);
-  if(num_i!=eu::rows(D))
+  std::vector<std::pair<bool, std::string>> checks =
+  { {num_s==eu::cols(A), "A is not a squared " + dim(A) + " (num states: " + std::to_string(num_s) +")"},
+    {num_s==eu::rows(B), "B rows differ from A rows [B:"+dim(B)+", A:"+dim(A)+"]"},
+    {num_s==eu::cols(C), "C cols differ from A rows [C:"+dim(C)+", A:"+dim(A)+"]"},
+    {num_i==eu::cols(D), "D cols differ from B cols [D:"+dim(D)+", A:"+dim(B)+"]"},
+    {num_o==eu::rows(D), "D rows differ from C rows [D:"+dim(D)+", C:"+dim(C)+"]"},
+  };
+
+  for(auto const & c: checks)
   {
-    what += "The number of rows of Matrix D is different from the number of cols of Matrix C.";
-    return false;
+    what += c.first ? "" : (what.size()>0?"\n":"") + c.second;
+    ok &= c.first;
+  }
+  if(!ok)
+  {
+    return -1;
   }
 
   DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
@@ -146,6 +152,7 @@ inline int setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
                                     const std::string& name,
                                       std::string& what)
 {
+  what="";
   double order;
   double dof;
 
@@ -158,7 +165,7 @@ inline int setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
   if (!type.compare("integral-state-space"))
   {
     what += "Error, the type of the matrices is not 'integral-state-space'";
-    return false;
+    return -1;
   }
 
   IntegralStateSpaceArgs args;
@@ -166,13 +173,13 @@ inline int setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
   args.order = 1;
   if(!rosparam_utilities::getParam(nh,name+"/order",args.order, what, &args.order))
   {
-    return false;
+    return -1;
   }
 
   args.degrees_of_freedom = 1;
   if(!rosparam_utilities::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
   {
-    return false;
+    return -1;
   }
 
   return out.setMatrices(args,what);
@@ -185,16 +192,17 @@ inline int setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
                                     const std::string& name,
                                       std::string& what)
 {
+  what="";
   std::string type = "integral-discrete-state-space";
   if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
   {
-    return false;
+    return -1;
   }
 
   if (!type.compare("integral-discrete-state-space"))
   {
     what += "Error, the type of the matrices is not 'integral-discrete-state-space'";
-    return false;
+    return -1;
   }
 
   IntegralDiscreteStateSpaceArgs args;
@@ -202,19 +210,19 @@ inline int setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
   args.order = 1;
   if(!rosparam_utilities::getParam(nh,name+"/order",args.order, what, &args.order))
   {
-    return false;
+    return -1;
   }
 
   args.degrees_of_freedom = 1;
   if(!rosparam_utilities::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
   {
-    return false;
+    return -1;
   }
 
   args.dt = 0;
   if(!rosparam_utilities::getParam(nh,name+"/dt",args.dt, what, &args.dt))
   {
-    return false;
+    return -1;
   }
 
   return out.setMatrices(args,what);
@@ -224,17 +232,22 @@ template<int N, int MN>
 inline int setMatricesFromParam(Controller<N,MN>& out,
     const ros::NodeHandle& nh,const std::string& name,std::string& what)
 {
+  int ret = 1;
   std::map<std::string,std::vector<std::string>> _types =
   { {"P"  , {"proportional_controller", "p_controller", "P_controller", "PROPORTIONAL",  "proportional", "p", "P"}},
     {"PI" , {"integral_proportional_controller", "pi_controller",
               "PI_controller", "PROPORTIONAL_INTEGRAL",  "proportional_integral", "PI", "P"}},
     {"SS" , {"state-space"}}};
   double sample_period = 0.001;
-  std::string type = "proportional_controller";
+  std::string type = "state-space";
 
-  if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
+  what="";
+  std::string msg;
+  bool ok = rosparam_utilities::getParam(nh,name+"/type",type, msg, &type);
+  what = to_string(what, ok,msg);
+  if(!ok)
   {
-    return false;
+    return -1;
   }
 
   int n = out.xDim();
@@ -283,7 +296,9 @@ inline int setMatricesFromParam(Controller<N,MN>& out,
   {
     DiscreteStateSpace<N,N,N,MN,MN,MN>& _tmp = dynamic_cast< DiscreteStateSpace<N,N,N,MN,MN,MN>& >(out);
 
-    if(!setMatricesFromParam(_tmp,nh,name,what))
+    ret = setMatricesFromParam(_tmp,nh,name,msg);
+    what = to_string(what, ret>0, msg);
+    if(!ret)
     {
       return -1;
     }
@@ -294,17 +309,24 @@ inline int setMatricesFromParam(Controller<N,MN>& out,
     eu::setZero(aw_gain);
 
     std::vector<double> aw_states(out.xDim(),0); //antiwindup_gain
-    if(!rosparam_utilities::getParam(nh, name+"/antiwindup_gain", aw_gain, what, &aw_gain))
+    ok = rosparam_utilities::getParam(nh, name+"/antiwindup_gain", aw_gain, msg, &aw_gain);
+    what = to_string(what, ok,msg);
+    if(!ok)
     {
       return -1;
     }
-    if (!rosparam_utilities::getParam(nh, name+"/antiwindup_states", aw_states, what, &aw_states))
+
+    ok = rosparam_utilities::getParam(nh, name+"/antiwindup_states", aw_states, msg, &aw_states);
+    what = to_string(what, ok,msg);
+    if(!ok)
     {
       return -1;
     }
-    if (int(aw_states.size())!=out.xDim())
+
+    ok = int(aw_states.size())!=out.xDim();
+    what = to_string(what, ok, " antiwindup_states size is wrong '" + name + ".");
+    if(!ok)
     {
-      what += " antiwindup_states size is wrong '" + name + ".";
       return -1;
     }
 
@@ -321,7 +343,9 @@ inline int setMatricesFromParam(Controller<N,MN>& out,
         }
       }
     }
-    return out.setAntiWindupMatrix(Baw, what);
+    ret = out.setAntiWindupMatrix(Baw, msg);
+    what = to_string(what, ret>0,msg);
+    return ret;
   }
   else if(type == "none")
   {
@@ -337,7 +361,9 @@ inline int setMatricesFromParam(Controller<N,MN>& out,
     eu::setZero(args.C  );
     eu::setZero(args.D  );
     eu::setZero(args.Baw);
-    return out.setMatrices(args, what);
+    ret = out.setMatrices(args, msg);
+    what = to_string(what, ret>0,msg);
+    return ret;
   }
 
   what = "Type '" + type + "' not recognized. The implemented controller types are: ";
