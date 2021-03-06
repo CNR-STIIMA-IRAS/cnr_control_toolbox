@@ -83,18 +83,50 @@ TEST(TestSuite, TestDiscreteStateSpaceNNN)
 
 TEST(TestSuite, TestDiscreteStateSpaceXXX)  
 {
+  std::cout << "***** ROSPARAM SERVER NAMES ****" << std::endl;
+  std::vector<std::string> names;
+  if(ros::param::getParamNames(names))
+  {
+    for(auto const & n : names)
+      std::cout << "-" << n << std::endl;
+  }
+  std::cout << "***** [END] ROSPARAM SERVER NAMES ****" << std::endl;
   EXPECT_NO_FATAL_FAILURE(DiscreteStateSpaceXXX ss);
   
   DiscreteStateSpaceXXX dss;
   std::string what;
-  EXPECT_FALSE(setMatricesFromParam(dss,*nh,"/non_existent_namespace",what));
-  EXPECT_FALSE(setMatricesFromParam(dss,*nh,"/dss",what));
-  EXPECT_TRUE(setMatricesFromParam(dss,*nh,"dss",what));
+  int ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/non_existent_namespace",what);
+  EXPECT_TRUE(ret==-1);
+  std::cout << ret <<": " << what << std::endl;
 
-  EXPECT_TRUE( 2 == dss.xDim() );
-  EXPECT_TRUE( 3 == dss.uDim() );
-  EXPECT_TRUE( 1 == dss.yDim() );
+  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss",what);
+  EXPECT_TRUE(ret==-1);
+  std::cout << ret <<": " << what << std::endl;
+
+  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"dss",what);
+  EXPECT_TRUE(ret>=0);
+  std::cout << ret <<": " << what << std::endl;
+
+//  EXPECT_TRUE( 2 == dss.xDim() );
+//  EXPECT_TRUE( 3 == dss.uDim() );
+//  EXPECT_TRUE( 1 == dss.yDim() );
 }
+
+
+//TEST(TestSuite, MatrixBasedFlterX)
+//{
+//  EXPECT_NO_FATAL_FAILURE( eigen_control_toolbox::DiscreteStateSpaceX lpf );
+
+//  eigen_control_toolbox::DiscreteStateSpaceX lpf;
+
+//  std::string msg;
+//  int ok = eigen_control_toolbox::setMatricesFromParam(lpf,*nh, "pos_filter",msg);
+//  EXPECT_TRUE(ok);
+//  std::cout << ok << std::endl;
+//  std::cout << msg << std::endl;
+//}
+
+
 
 
 
