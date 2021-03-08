@@ -44,18 +44,25 @@ inline int Controller<N,MN>::setAntiWindupMatrix(const typename Controller<N,MN>
 template<int N, int MN>
 inline int Controller<N,MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& what)
 {
-  what = "";
-  int ret = eigen_control_toolbox::DiscreteStateSpace<N,N,N,MN,MN,MN>::setMatrices(args, what);
-  if(ret!=1)
+  try
   {
-    what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ":\n" +  what;
-    if(ret==-1)
-      return -1;
+    what = "";
+    int ret = eigen_control_toolbox::DiscreteStateSpace<N,N,N,MN,MN,MN>::setMatrices(args, what);
+    if(ret!=1)
+    {
+      what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ":\n" +  what;
+      if(ret==-1)
+        return -1;
+    }
+
+    const ControllerStateSpaceArgs<N,MN>& _args = dynamic_cast< const ControllerStateSpaceArgs<N,MN>& >(args);
+    m_Baw = _args.Baw;
   }
-
-  const ControllerStateSpaceArgs<N,MN>& _args = dynamic_cast< const ControllerStateSpaceArgs<N,MN>& >(args);
-  m_Baw = _args.Baw;
-
+  catch(std::exception& e)
+  {
+    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
+    return -1;
+  }
   return what.size() > 0 ? 0 : 1;
 }
 

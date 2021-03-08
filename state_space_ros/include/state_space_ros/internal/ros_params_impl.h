@@ -69,12 +69,11 @@ inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
   return true;
 }
 
-
 template<int S, int I, int O, int MS, int MI, int MO>
-inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
-                            const ros::NodeHandle& nh,
-                              const std::string& name,
-                                std::string& what)
+inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& args,
+                                        const ros::NodeHandle& nh,
+                                          const std::string& name,
+                                            std::string& what)
 {
   bool ret = true;
   try
@@ -85,7 +84,6 @@ inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
     Eigen::MatrixXd B;
     Eigen::MatrixXd C;
     Eigen::MatrixXd D;
-    DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
 
     std::string msg;
     bool ok = importMatricesFromParam(nh, name, A,B,C,D, msg);
@@ -122,8 +120,6 @@ inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
     {
       return false;
     }
-
-    ret = out.setMatrices(args,what);
   }
   catch(std::exception& e)
   {
@@ -132,6 +128,39 @@ inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
   }
   return ret;
 
+}
+
+
+template<int S, int I, int O, int MS, int MI, int MO>
+inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
+                            const ros::NodeHandle& nh,
+                              const std::string& name,
+                                std::string& what)
+{
+  try
+  {
+    std::string msg;
+    DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
+    if(!getDiscreteStateSpaceArgs(args, nh, name, msg))
+    {
+      what += (what.size()>0? "\n[!]" : "[!]") + msg;
+      return false;
+    }
+    what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
+
+    if(!out.setMatrices(args,msg))
+    {
+      what += (what.size()>0? "\n[!]" : "[!]") + msg;
+      return false;
+    }
+    what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
+  }
+  catch(std::exception& e)
+  {
+    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
+    return false;
+  }
+  return true;
 }
 
 
@@ -231,7 +260,6 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
 {
   try
   {
-
     int ret = 1;
     std::map<std::string,std::vector<std::string>> _types =
     { {"P"  , {"proportional_controller", "p_controller", "P_controller", "PROPORTIONAL",  "proportional", "p", "P"}},
@@ -294,16 +322,14 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
     }
     else if(st!=_types["SS"].end())
     {
+      ControllerStateSpaceArgs<N,MN> args;
 
-      DiscreteStateSpace<N,N,N,MN,MN,MN>& _tmp = dynamic_cast< DiscreteStateSpace<N,N,N,MN,MN,MN>& >(out);
-
-      ret = setMatricesFromParam(_tmp, nh, name,msg);
-
-      what = to_string(what, ret>0, msg);
-      if(!ret)
+      if(!getDiscreteStateSpaceArgs(args, nh, name, msg))
       {
+        what += (what.size()>0? "\n[!]" : "[!]") + msg;
         return false;
       }
+      what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
 
       typename Controller<N,MN>::MatrixN aw_gain;  //antiwindup_gain
 
@@ -332,21 +358,25 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
         return false;
       }
 
-      typename Controller<N,MN>::MatrixN Baw;
-      Baw = out.B() * aw_gain;
-
+      eu::resize(args.Baw, eu::rows(args.A),eu::rows(args.B));
+      args.Baw = out.B() * aw_gain;
       for(int iord=0;iord<out.xDim();iord++)
       {
         if (!aw_states.at(iord))
         {
-          for(int j=0;j<eu::cols(Baw);j++)
+          for(int j=0;j<eu::cols(args.Baw);j++)
           {
-            eu::at(Baw, iord, j) = 0.0;
+            eu::at(args.Baw, iord, j) = 0.0;
           }
         }
       }
-      ret = out.setAntiWindupMatrix(Baw, msg);
-      what = to_string(what, ret>0,msg);
+
+      ret = out.setMatrices(args,what);
+      what = to_string(what, ret>0, msg);
+      if(!ret)
+      {
+        return false;
+      }
 
       return ret;
     }
