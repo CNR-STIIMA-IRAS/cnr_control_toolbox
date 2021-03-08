@@ -79,9 +79,10 @@ inline int setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
   Eigen::MatrixXd B;
   Eigen::MatrixXd C;
   Eigen::MatrixXd D;
+  DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
 
   std::string msg;
-  bool ok = importMatricesFromParam(nh, name, A,B,D,D, msg);
+  bool ok = importMatricesFromParam(nh, name, A,B,C,D, msg);
   what = to_string(what, ok,msg);
   if(!ok)
   {
@@ -91,15 +92,22 @@ inline int setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
   int num_s = eu::rows(A);
   int num_i = eu::cols(B);
   int num_o = eu::rows(C);
-  std::vector<std::pair<bool, std::string>> checks =
+  std::vector<std::pair<bool, std::string>> operations =
   { {num_s==eu::cols(A), "A is not a squared " + dim(A) + " (num states: " + std::to_string(num_s) +")"},
     {num_s==eu::rows(B), "B rows differ from A rows [B:"+dim(B)+", A:"+dim(A)+"]"},
     {num_s==eu::cols(C), "C cols differ from A rows [C:"+dim(C)+", A:"+dim(A)+"]"},
     {num_i==eu::cols(D), "D cols differ from B cols [D:"+dim(D)+", A:"+dim(B)+"]"},
     {num_o==eu::rows(D), "D rows differ from C rows [D:"+dim(D)+", C:"+dim(C)+"]"},
-  };
+    {eu::resize(args.A, A.rows(), A.cols()), "A cannot be resized as the param A. Wrong static allocation?"},
+    {eu::resize(args.B, B.rows(), B.cols()), "B cannot be resized as the param B. Wrong static allocation?"},
+    {eu::resize(args.C, C.rows(), C.cols()), "C cannot be resized as the param C. Wrong static allocation?"},
+    {eu::resize(args.D, D.rows(), D.cols()), "D cannot be resized as the param D. Wrong static allocation?"},
+    {eu::copy  (args.A, A), "Weird error in storing the param A. Wrong static allocation?"},
+    {eu::copy  (args.B, B), "Weird error in storing the param B. Wrong static allocation?"},
+    {eu::copy  (args.C, C), "Weird error in storing the param C. Wrong static allocation?"},
+    {eu::copy  (args.D, D), "Weird error in storing the param D. Wrong static allocation?"},  };
 
-  for(auto const & c: checks)
+  for(auto const & c: operations)
   {
     what += c.first ? "" : (what.size()>0?"\n":"") + c.second;
     ok &= c.first;
@@ -107,39 +115,6 @@ inline int setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
   if(!ok)
   {
     return -1;
-  }
-
-  DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
-  for(int i=0;i<num_s;i++)
-  {
-    for(int j=0;j<num_s;j++)
-    {
-      eu::at(args.A,i,j) = A(i,j);
-    }
-  }
-
-  for(int i=0;i<num_s;i++)
-  {
-    for(int j=0;j<num_i;j++)
-    {
-      eu::at(args.B,i,j) = B(i,j);
-    }
-  }
-
-  for(int i=0;i<num_o;i++)
-  {
-    for(int j=0;j<num_s;j++)
-    {
-      eu::at(args.C,i,j) = C(i,j);
-    }
-  }
-
-  for(int i=0;i<num_o;i++)
-  {
-    for(int j=0;j<num_s;j++)
-    {
-      eu::at(args.D,i,j) = D(i,j);
-    }
   }
 
   return out.setMatrices(args,what);
@@ -153,8 +128,6 @@ inline int setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
                                       std::string& what)
 {
   what="";
-  double order;
-  double dof;
 
   std::string type = "integral-state-space";
   if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))

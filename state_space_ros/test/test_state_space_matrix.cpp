@@ -83,33 +83,37 @@ TEST(TestSuite, TestDiscreteStateSpaceNNN)
 
 TEST(TestSuite, TestDiscreteStateSpaceXXX)  
 {
-  std::cout << "***** ROSPARAM SERVER NAMES ****" << std::endl;
-  std::vector<std::string> names;
-  if(ros::param::getParamNames(names))
-  {
-    for(auto const & n : names)
-      std::cout << "-" << n << std::endl;
-  }
-  std::cout << "***** [END] ROSPARAM SERVER NAMES ****" << std::endl;
   EXPECT_NO_FATAL_FAILURE(DiscreteStateSpaceXXX ss);
   
   DiscreteStateSpaceXXX dss;
   std::string what;
   int ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/non_existent_namespace",what);
   EXPECT_TRUE(ret==-1);
-  std::cout << ret <<": " << what << std::endl;
-
-  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss",what);
-  EXPECT_TRUE(ret==-1);
-  std::cout << ret <<": " << what << std::endl;
+  std::cout <<  what << std::endl;
 
   ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"dss",what);
-  EXPECT_TRUE(ret>=0);
-  std::cout << ret <<": " << what << std::endl;
+  EXPECT_TRUE(ret==-1);
+  std::cout <<  what << std::endl;
 
-//  EXPECT_TRUE( 2 == dss.xDim() );
-//  EXPECT_TRUE( 3 == dss.uDim() );
-//  EXPECT_TRUE( 1 == dss.yDim() );
+  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss",what);
+  EXPECT_TRUE(ret>=0);
+  std::cout <<  what << std::endl;
+
+  EXPECT_TRUE( 2 == dss.xDim() );
+  EXPECT_TRUE( 3 == dss.uDim() );
+  EXPECT_TRUE( 1 == dss.yDim() );
+
+  EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss2",what)>=0);
+  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
+
+  EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss3",what)>=0);
+  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
+
+  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss4_wrong",what)>=0);
+  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
+
+  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss5_wrong",what)>=0);
+  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
 }
 
 

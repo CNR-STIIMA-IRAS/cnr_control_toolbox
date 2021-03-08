@@ -3,56 +3,57 @@
 <arg name="valgrind" default="false" />
 <arg name="debug" default="false" />
 
+<rosparam>
+  dss:
+    A:
+    - [1.0, 0.0]
+    - [0.0, 1.0]
+    B:
+    - [1.0,1.0, 0.0]
+    - [0.0,1.0, 1.0]
+    C:
+    - [1.0, 1.0]
+    D:
+    - [1.0,1.0, 1.0]
+  dss2:
+    A:
+    - [1.0]
+    B:
+    - [0.0]
+    C:
+    - [1]
+    D:
+    - [1.0]
+  dss3:
+    A: [[1.0]]
+    B: [[0.0]]
+    C: [[1]]
+    D: [[1.0]]
+  dss4_wrong:
+    A: [1.0]
+    B: [0.0]
+    C: [1]
+    D: [1.0]
+  dss5_wrong:
+    A: 1.0
+    B: 0.0
+    C: 1
+    D: 1.0
+</rosparam>
+
 <group if="$(arg valgrind)">
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
   <arg     if="$(arg debug)" name="launch_prefix"
       value="valgrind -v --track-origins=yes --tool=memcheck --leak-check=full --show-reachable=yes  --num-callers=20 --track-fds=yes  --log-file=/home/feymann/a.txt" />
   <test launch-prefix="$(arg launch_prefix)" test-name="test_ssm" pkg="state_space_ros" type="state_space_ros_test_state_space_matrix" >
-    <rosparam>
-      dss:
-        A: 
-        - [1.0, 1.0]
-        - [1.0, 1.0]
-        B: 
-        - [1.0,1.0, 1.0]
-        - [1.0,1.0, 1.0]
-        C: 
-        - [1.0,1.0]
-        D: 
-        - [1.0,1.0, 1.0]
-    </rosparam>
-    </test>
+  </test>
 </group>
 
 <group unless="$(arg valgrind)">
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
   <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
   <test launch-prefix="$(arg launch_prefix)" test-name="test_ssm" pkg="state_space_ros" type="state_space_ros_test_state_space_matrix" >
-    <rosparam>
-      dss:
-        A: 
-        - [1.0, 0.0]
-        - [0.0, 1.0]
-        B: 
-        - [1.0,1.0, 0.0]
-        - [0.0,1.0, 1.0]
-        C: 
-        - [1.0,1.0]
-        D: 
-        - [1.0,1.0, 1.0]
-    </rosparam>
   </test>
 </group>
-<!--
-pos_filter:
-  A:   [[0.5]]
-  B:   [[0.5]]
-  Baw: [[0.0]]
-  C:   [[0.0]]
-  D:   [[1.0]]
-  max_output: [[30.0 ]]
-  min_output: [[-30.0]]
-  initial_state: [[0.00000000e+00 ]]
-  initialization_matrix: [[1.0 ]]-->
 
 </launch>
