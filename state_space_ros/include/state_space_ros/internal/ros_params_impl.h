@@ -279,7 +279,7 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
     }
 
     int n = out.xDim();
-    if(N==-1)
+    if(n==-1)
     {
       nh.param(name+"/order", n, 1);
     }
