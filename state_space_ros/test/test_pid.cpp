@@ -93,6 +93,46 @@ TEST(TestSuite, ProportionalIntegralController)
 }
 
 
+// Declare a test
+TEST(TestSuite, ControllerSS)
+{
+  int ret;
+  std::string what;
+  EXPECT_NO_FATAL_FAILURE(ControllerX ctrl_ss);
+  ControllerX ctrl_ss;
+
+  EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(ctrl_ss,*nh,"/ss", what) );
+  EXPECT_TRUE(ret>=0);
+  if (ret==0)
+  {
+    ROS_WARN("Failing initializing controller ctrl1: %s", what.c_str());
+  }
+  else if(ret==-1)
+  {
+    ROS_ERROR("Failing initializing controller ctrl1: %s", what.c_str());
+  }
+
+  ROS_INFO("ctrl1:");
+  EXPECT_NO_FATAL_FAILURE(std::cout << ctrl_ss << std::endl; );
+
+  for (unsigned int idx=0;idx<200;idx++)
+  {
+    ControllerX::Input controller_input;
+    ControllerX::Output p_output;
+    ControllerX::State  state;
+    EXPECT_NO_FATAL_FAILURE(eigen_utils::resize(controller_input,ctrl_ss.uDim()) );
+    EXPECT_NO_FATAL_FAILURE(eigen_utils::setConstant(controller_input, 1));
+
+    EXPECT_NO_FATAL_FAILURE(p_output = ctrl_ss.update(controller_input));
+    EXPECT_NO_FATAL_FAILURE(state = ctrl_ss.x());
+    std::cout << "controller_input=" << eigen_utils::to_string(controller_input)
+              << ", output=" << eigen_utils::to_string(p_output)
+              << ", state=" << eigen_utils::to_string(state)
+              << std::endl;
+  }
+
+}
+
 int main(int argc,char** argv)
 {
   // ------ Init ROS ------

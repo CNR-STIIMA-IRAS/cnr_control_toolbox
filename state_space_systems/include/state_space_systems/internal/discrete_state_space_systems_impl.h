@@ -50,51 +50,59 @@ inline DiscreteStateSpace<S,I,O,MS,MI,MO>::DiscreteStateSpace(const DiscreteStat
 template<int S, int I, int O, int MS, int MI, int MO> 
 inline int DiscreteStateSpace<S,I,O,MS,MI,MO>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
 {
-  const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& _args
-      = dynamic_cast<const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>&>(args);
-
-  if(S==Eigen::Dynamic)
+  try
   {
-    eu::resize(m_state, eu::rows(_args.A), 1);
+    const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& _args
+        = dynamic_cast<const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>&>(args);
+
+    if(S==Eigen::Dynamic)
+    {
+      eu::resize(m_state, eu::rows(_args.A), 1);
+    }
+    if(I==Eigen::Dynamic)
+    {
+      eu::resize(m_input, eu::cols(_args.B), 1);
+    }
+    if(O==Eigen::Dynamic)
+    {
+      eu::resize(m_output, eu::rows(_args.C), 1);
+    }
+    msg += std::string(__PRETTY_FUNCTION__) + ":\n\t";
+
+    if(!eu::checkInputDim("Matrix A", _args.A, xDim(), xDim(), msg)) return -1;
+    if(!eu::checkInputDim("Matrix B", _args.B, xDim(), uDim(), msg)) return -1;
+    if(!eu::checkInputDim("Matrix C", _args.C, yDim(), xDim(), msg)) return -1;
+    if(!eu::checkInputDim("Matrix D", _args.D, yDim(), uDim(), msg)) return -1;
+
+    // it may change the dimension of the problem if the matrixes are dynamically allocated
+    eu::copy(m_A, _args.A); //A is S x S
+    eu::copy(m_B, _args.B); //B is S x I
+    eu::copy(m_C, _args.C); //C is O x S
+    eu::copy(m_D, _args.D); //D is O x I
+
+    eu::resize(m_Obs, yDim()*xDim(), xDim()); // Obs is (OxS) x S
+    eu::resize(m_i2o, yDim()*xDim(), uDim()*xDim() );  // i2o is (OxS) x (IxS))
+
+    int ret = 1;
+    if(!computeObservabilityMatrix(m_Obs, m_A, m_C, xDim() ))
+    {
+      msg += "The observability matrix is Rank-deficient.";
+      ret = 0;
+    }
+
+    if(!computeControllabilityMatrix(m_Ctrl, m_A, m_B, xDim()))
+    {
+      msg += "The controllability matrix is Rank-deficient.";
+      ret = 0;
+    }
+
+    return ret;
   }
-  if(I==Eigen::Dynamic)
+  catch(std::exception& e)
   {
-    eu::resize(m_input, eu::cols(_args.B), 1);
+    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what();
   }
-  if(O==Eigen::Dynamic)
-  {
-    eu::resize(m_output, eu::rows(_args.C), 1);
-  }
-  msg += std::string(__PRETTY_FUNCTION__) + ":\n\t";
-
-  if(!eu::checkInputDim("Matrix A", _args.A, xDim(), xDim(), msg)) return -1;
-  if(!eu::checkInputDim("Matrix B", _args.B, xDim(), uDim(), msg)) return -1;
-  if(!eu::checkInputDim("Matrix C", _args.C, yDim(), xDim(), msg)) return -1;
-  if(!eu::checkInputDim("Matrix D", _args.D, yDim(), uDim(), msg)) return -1;
-
-  // it may change the dimension of the problem if the matrixes are dynamically allocated
-  eu::copy(m_A, _args.A); //A is S x S
-  eu::copy(m_B, _args.B); //B is S x I
-  eu::copy(m_C, _args.C); //C is O x S
-  eu::copy(m_D, _args.D); //D is O x I
-
-  eu::resize(m_Obs, yDim()*xDim(), xDim()); // Obs is (OxS) x S
-  eu::resize(m_i2o, yDim()*xDim(), uDim()*xDim() );  // i2o is (OxS) x (IxS))
-
-  int ret = 1;
-  if(!computeObservabilityMatrix(m_Obs, m_A, m_C, xDim() ))
-  {
-    msg += "The observability matrix is Rank-deficient.";
-    ret = 0;
-  }
-
-  if(!computeControllabilityMatrix(m_Ctrl, m_A, m_B, xDim()))
-  {
-    msg += "The controllability matrix is Rank-deficient.";
-    ret = 0;
-  }
-
-  return ret;
+  return -1;
 }
 
 template<int S, int I, int O, int MS, int MI, int MO> 
@@ -154,8 +162,8 @@ inline bool DiscreteStateSpace<S,I,O,MS,MI,MO>::setStateFromIO(
 template<int S, int I, int O, int MS, int MI, int MO> 
 inline bool DiscreteStateSpace<S,I,O,MS,MI,MO>::setStateFromLastIO(const Input& inputs, const Output& outputs)
 {
-  eu::checkInputDimAndThrowEx("Inputs", m_input, eu::rows(inputs), eu::cols(inputs));
-  eu::checkInputDimAndThrowEx("Outputs", m_output, eu::rows(outputs), eu::cols(outputs));
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", m_input, eu::rows(inputs), eu::cols(inputs));
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Outputs", m_output, eu::rows(outputs), eu::cols(outputs));
 
   if(!eu::solve(m_state, m_C, outputs - m_D * inputs ) )
   {

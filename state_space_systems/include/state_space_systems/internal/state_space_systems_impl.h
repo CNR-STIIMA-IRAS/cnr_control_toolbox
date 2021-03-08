@@ -130,14 +130,14 @@ inline bool computeControllabilityMatrix( MatrixCtrl&      out,
 
 
 template<typename State0, typename MatrixA, typename MatrixB, typename MatrixC, typename MatrixD>
-inline int estimateState0(State0& x0, 
-                           const MatrixA& A,
-                           const MatrixB& B,
-                           const MatrixC& C,
-                           const MatrixD& D,
-                           const Eigen::VectorXd& inputs,
-                           const Eigen::VectorXd& outputs,
-                           std::string& msg)
+inline int estimateState0(State0& x0,
+                          const MatrixA& A,
+                          const MatrixB& B,
+                          const MatrixC& C,
+                          const MatrixD& D,
+                          const Eigen::VectorXd& inputs,
+                          const Eigen::VectorXd& outputs,
+                          std::string& msg)
 {
   /*
    * 

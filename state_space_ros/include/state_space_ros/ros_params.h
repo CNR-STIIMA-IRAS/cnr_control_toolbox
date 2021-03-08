@@ -43,26 +43,28 @@ bool importMatricesFromParam( const ros::NodeHandle&  nh,
 
 
 template<int S, int I, int O, int MS, int MI, int MO>
-int setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
+bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
                             const ros::NodeHandle& nh,
                               const std::string& name,
                                 std::string& what);
 
 template< int K,int N,int MaxK=K,int MaxN=N>
-int setMatricesFromParam(IntegralStateSpace<K,N,MaxK,MaxN>& out,
+bool setMatricesFromParam(IntegralStateSpace<K,N,MaxK,MaxN>& out,
                             const ros::NodeHandle& nh,
                               const std::string& name,
                                 std::string& what);
 
 template< int K,int N,int MaxK=K,int MaxN=N>
-int setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MaxK,MaxN>& out,
+bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MaxK,MaxN>& out,
                             const ros::NodeHandle& nh,
                               const std::string& name,
                                 std::string& what);
 
 template<int N, int MaxN=N>
-int setMatricesFromParam(Controller<N,MaxN>& out,const ros::NodeHandle& nh,const std::string& name,std::string& what);
-
+bool setMatricesFromParam(Controller<N,MaxN>& out,
+                            const ros::NodeHandle& nh,
+                              const std::string& name,
+                                std::string& what);
 }
 
 

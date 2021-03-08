@@ -81,20 +81,39 @@ TEST(TestSuite, TestDiscreteStateSpaceNNN)
   EXPECT_NO_FATAL_FAILURE(y=ss.update(u)); // computing one step, updating state and output
 }
 
-/*TEST(TestSuite, TestDiscreteStateSpaceXXX)  
+TEST(TestSuite, TestDiscreteStateSpaceDynamicButOne)
 {
-  EXPECT_NO_FATAL_FAILURE(DiscreteStateSpaceXXX ss);
-  
-  DiscreteStateSpaceXXX dss;
-  std::string what;
-  EXPECT_FALSE(setMatricesFromParam(dss,*nh,"/non_existent_namespace",what));
-  EXPECT_FALSE(setMatricesFromParam(dss,*nh,"/dss",what));
-  EXPECT_TRUE(setMatricesFromParam(dss,*nh,"dss",what));
 
-  EXPECT_TRUE( 2 == dss.xDim() );
-  EXPECT_TRUE( 3 == dss.uDim() );
-  EXPECT_TRUE( 1 == dss.yDim() );
-}*/
+  eigen_control_toolbox::DiscreteStateSpaceArgs<-1, -1, -1> args;
+  eigen_utils::resize(args.A,1,1);
+  eigen_utils::resize(args.B,1,1);
+  eigen_utils::resize(args.C,1,1);
+  eigen_utils::resize(args.D,1,1);
+
+  eigen_utils::setRandom(args.A);
+  eigen_utils::setRandom(args.B);
+  eigen_utils::setRandom(args.C);
+  eigen_utils::setRandom(args.D);
+
+  // FIRST WAY TO DEFINE: consider the state with fixed-order,
+  // but the input and the output are defined online,
+  // according to the dimension of A,B,C and D.
+  // NOTE: since it is in runtime, if the Input or the Output are of
+  //       dimension 1, you have to use the "Eigen::VectorXd" as input
+  //       to the function, or Eigen::VectorXd with the proper dimension
+  EXPECT_NO_FATAL_FAILURE(DiscreteStateSpaceXXX ss(args));
+
+  DiscreteStateSpaceXXX ss(args);
+  Eigen::VectorXd u(1);   //input vector
+  Eigen::VectorXd y(1);  //output vector
+
+  u.setRandom();
+  y.setRandom();
+
+  EXPECT_TRUE(ss.setStateFromLastIO(u,y)); // initialize initial state value for dumpless startup
+
+  EXPECT_NO_FATAL_FAILURE( y=ss.update(u) ); // computing one step, updating state and output
+}
 
 
 
