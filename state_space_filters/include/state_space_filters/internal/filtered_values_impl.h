@@ -119,20 +119,12 @@ typename FilteredValue<N,MaxN>::Value& FilteredValue<N,MaxN>::value()
 template<int N, int MaxN>
 const typename FilteredValue<N,MaxN>::Value& FilteredValue<N,MaxN>::getUpdatedValue() const
 {
-//  if(!filter_active_)
-//  {
-//    throw std::runtime_error("The filter is not active. The access must be done through value().");
-//  }
   return values_;
 }
 
 template<int N, int MaxN>
 FilteredValue<N,MaxN>& FilteredValue<N,MaxN>::update(const FilteredValue<N,MaxN>::Value& new_values)
 {
-//  if(!filter_active_)
-//  {
-//    throw std::runtime_error("The filter is not active. The assignement must be done through value().");
-//  }
   assert( eigen_utils::rows(values_) == eigen_utils::rows(new_values) );
   if(filter_active_)
   {
