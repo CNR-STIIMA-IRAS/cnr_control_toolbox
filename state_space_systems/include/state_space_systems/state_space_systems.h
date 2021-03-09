@@ -77,7 +77,7 @@ public:
   BaseStateSpace()=default;
   virtual ~BaseStateSpace() = default;
 
-  virtual int setMatrices(const BaseStateSpaceArgs& args, std::string& msg) = 0;
+  virtual bool setMatrices(const BaseStateSpaceArgs& args, std::string& msg) = 0;
 
   virtual Eigen::Map<Eigen::VectorXd const> getX()  const = 0;
   virtual Eigen::Map<Eigen::VectorXd const> getY()  const = 0;

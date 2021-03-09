@@ -116,11 +116,9 @@ inline IntegralDiscreteStateSpace<K,N,MK,MN>::IntegralDiscreteStateSpace(const I
 
 
 template<int K, int N, int MK, int MN>
-inline int IntegralDiscreteStateSpace<K,N,MK,MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
+inline bool IntegralDiscreteStateSpace<K, N, MK, MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
 {
-  std::string what;
-
-   const IntegralDiscreteStateSpace& _iargs = dynamic_cast<const IntegralDiscreteStateSpace&>(args);
+  const IntegralDiscreteStateSpace& _iargs = dynamic_cast<const IntegralDiscreteStateSpace&>(args);
 
    DiscreteStateSpaceArgs< IntegralStateSpaceSymbols<K,N,MK,MN>::S, N, N,
        IntegralStateSpaceSymbols<K,N,MK,MN>::MaxS, MN, MN> _oargs;
@@ -130,25 +128,25 @@ inline int IntegralDiscreteStateSpace<K,N,MK,MN>::setMatrices(const BaseStateSpa
   if(!defaultIntegralDiscreteStateSpaceMatrixA(_oargs.A,order,dof,_iargs.dt))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting A";
-    return -1;
+    return false;
   }
 
   if(!defaultIntegralDiscreteStateSpaceMatrixB(_oargs.B,order,dof,_iargs.dt))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting B";
-    return -1;
+    return false;
   }
 
   if(!defaultIntegralDiscreteStateSpaceMatrixC(_oargs.C,order,dof))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting C";
-    return -1;
+    return false;
   }
 
   if(!defaultIntegralDiscreteStateSpaceMatrixD(_oargs.D,order,dof))
   {
     msg + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting D";
-    return -1;
+    return false;
   }
   return DiscreteStateSpace<
     IntegralStateSpaceSymbols<K,N,MK,MN>::S, N, N,IntegralStateSpaceSymbols<K,N,MK,MN>::MaxS, MN, MN

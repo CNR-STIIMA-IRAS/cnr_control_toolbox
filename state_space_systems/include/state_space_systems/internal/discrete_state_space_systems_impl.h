@@ -48,7 +48,7 @@ inline DiscreteStateSpace<S,I,O,MS,MI,MO>::DiscreteStateSpace(const DiscreteStat
 
 
 template<int S, int I, int O, int MS, int MI, int MO> 
-inline int DiscreteStateSpace<S,I,O,MS,MI,MO>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
+inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
 {
   try
   {
@@ -69,10 +69,10 @@ inline int DiscreteStateSpace<S,I,O,MS,MI,MO>::setMatrices(const BaseStateSpaceA
     }
     msg += std::string(__PRETTY_FUNCTION__) + ":\n\t";
 
-    if(!eu::checkInputDim("Matrix A", _args.A, xDim(), xDim(), msg)) return -1;
-    if(!eu::checkInputDim("Matrix B", _args.B, xDim(), uDim(), msg)) return -1;
-    if(!eu::checkInputDim("Matrix C", _args.C, yDim(), xDim(), msg)) return -1;
-    if(!eu::checkInputDim("Matrix D", _args.D, yDim(), uDim(), msg)) return -1;
+    if(!eu::checkInputDim("Matrix A", _args.A, xDim(), xDim(), msg)) return false;
+    if(!eu::checkInputDim("Matrix B", _args.B, xDim(), uDim(), msg)) return false;
+    if(!eu::checkInputDim("Matrix C", _args.C, yDim(), xDim(), msg)) return false;
+    if(!eu::checkInputDim("Matrix D", _args.D, yDim(), uDim(), msg)) return false;
 
     // it may change the dimension of the problem if the matrixes are dynamically allocated
     eu::copy(m_A, _args.A); //A is S x S
@@ -83,26 +83,22 @@ inline int DiscreteStateSpace<S,I,O,MS,MI,MO>::setMatrices(const BaseStateSpaceA
     eu::resize(m_Obs, yDim()*xDim(), xDim()); // Obs is (OxS) x S
     eu::resize(m_i2o, yDim()*xDim(), uDim()*xDim() );  // i2o is (OxS) x (IxS))
 
-    int ret = 1;
     if(!computeObservabilityMatrix(m_Obs, m_A, m_C, xDim() ))
     {
       msg += "The observability matrix is Rank-deficient.";
-      ret = 0;
     }
 
     if(!computeControllabilityMatrix(m_Ctrl, m_A, m_B, xDim()))
     {
       msg += "The controllability matrix is Rank-deficient.";
-      ret = 0;
     }
-
-    return ret;
+    return true;
   }
   catch(std::exception& e)
   {
     std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what();
   }
-  return -1;
+  return false;
 }
 
 template<int S, int I, int O, int MS, int MI, int MO> 

@@ -3,9 +3,11 @@
 #ifndef STATE_SPACE_ROS__ROS_PARAMS_IMPL_H
 #define STATE_SPACE_ROS__ROS_PARAMS_IMPL_H
 
+#include <eigen_matrix_utils/overloads.h>
 #include <state_space_ros/ros_params.h>
 
-#define LL std::cout << __LINE__ << std::endl;
+namespace ru = rosparam_utilities;
+namespace eu = eigen_utils;
 
 //! @brief The implementation of all the classes and functions for the management of a Discreate Space System
 namespace eigen_control_toolbox
@@ -14,7 +16,7 @@ namespace eigen_control_toolbox
 inline std::string to_string(const std::string& what, const bool& ret, const std::string& msg)
 {
   return what + (what.size()>0?"\n":"") +
-    ( ret ? (msg.size()==0? "" : "[?]" + msg) : "[!]" + msg);
+    ( ret ? (msg.size()==0? "" : "" + msg) : "[!]" + msg);
 }
 
 inline std::string dim(const Eigen::MatrixXd& m)
@@ -32,7 +34,7 @@ inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
 {
   what="";
   std::string type = "state-space";
-  if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
+  if(!ru::getParam(nh,name+"/type",type, what, &type))
   {
     return false;
   }
@@ -50,19 +52,19 @@ inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
     return true;
   }
 
-  if(!rosparam_utilities::getParam(nh, name+"/A", A, what))
+  if(!ru::getParam(nh, name+"/A", A, what))
   {
     return false;
   }
-  if(!rosparam_utilities::getParam(nh, name+"/B", B, what))
+  if(!ru::getParam(nh, name+"/B", B, what))
   {
     return false;
   }
-  if(!rosparam_utilities::getParam(nh, name+"/C", C, what))
+  if(!ru::getParam(nh, name+"/C", C, what))
   {
     return false;
   }
-  if(!rosparam_utilities::getParam(nh, name+"/D", D, what))
+  if(!ru::getParam(nh, name+"/D", D, what))
   {
     return false;
   }
@@ -146,14 +148,14 @@ inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
       what += (what.size()>0? "\n[!]" : "[!]") + msg;
       return false;
     }
-    what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
+    what += msg.size()>0 ? ( (what.size()>0? "\n" : "") + msg ) : "";
 
     if(!out.setMatrices(args,msg))
     {
       what += (what.size()>0? "\n[!]" : "[!]") + msg;
       return false;
     }
-    what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
+    what += msg.size()>0 ? ( (what.size()>0? "\n" : "") + msg ) : "";
   }
   catch(std::exception& e)
   {
@@ -173,7 +175,7 @@ inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
   what="";
 
   std::string type = "integral-state-space";
-  if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
+  if(!ru::getParam(nh,name+"/type",type, what, &type))
   {
     return false;
   }
@@ -187,13 +189,13 @@ inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
   IntegralStateSpaceArgs args;
 
   args.order = 1;
-  if(!rosparam_utilities::getParam(nh,name+"/order",args.order, what, &args.order))
+  if(!ru::getParam(nh,name+"/order",args.order, what, &args.order))
   {
     return false;
   }
 
   args.degrees_of_freedom = 1;
-  if(!rosparam_utilities::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
+  if(!ru::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
   {
     return false;
   }
@@ -213,7 +215,7 @@ inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
   {
     what="";
     std::string type = "integral-discrete-state-space";
-    if(!rosparam_utilities::getParam(nh,name+"/type",type, what, &type))
+    if(!ru::getParam(nh,name+"/type",type, what, &type))
     {
       return false;
     }
@@ -227,19 +229,19 @@ inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
     IntegralDiscreteStateSpaceArgs args;
 
     args.order = 1;
-    if(!rosparam_utilities::getParam(nh,name+"/order",args.order, what, &args.order))
+    if(!ru::getParam(nh,name+"/order",args.order, what, &args.order))
     {
       return false;
     }
 
     args.degrees_of_freedom = 1;
-    if(!rosparam_utilities::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
+    if(!ru::getParam(nh,name+"/dof",args.degrees_of_freedom, what, &args.degrees_of_freedom))
     {
       return false;
     }
 
     args.dt = 0;
-    if(!rosparam_utilities::getParam(nh,name+"/dt",args.dt, what, &args.dt))
+    if(!ru::getParam(nh,name+"/dt",args.dt, what, &args.dt))
     {
       return false;
     }
@@ -258,6 +260,7 @@ template<int N, int MN>
 inline bool setMatricesFromParam(Controller<N,MN>& out,
     const ros::NodeHandle& nh,const std::string& name,std::string& what)
 {
+  bool ok = true;
   try
   {
     int ret = 1;
@@ -271,17 +274,11 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
 
     what="Param '"+name+"'";
     std::string msg;
-    bool ok = rosparam_utilities::getParam(nh,name+"/type",type, msg, &type);
+    bool ok = ru::getParam(nh,name+"/type",type, msg, &type);
     what = to_string(what, ok,msg);
     if(!ok)
     {
       return false;
-    }
-
-    int n = out.xDim();
-    if(N==-1)
-    {
-      nh.param(name+"/order", n, 1);
     }
 
     auto pt = std::find_if(_types["P" ].begin(),_types["P"]. end(), [type](const auto& v){return v == type;});
@@ -290,31 +287,96 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
     if((pt!=_types["P"].end())||(it!=_types["PI"].end()))
     {
       typename Controller<N,MN>::MatrixN Kp, Ki;
-      double kp=0;
+      int n_from_param = -1;
+      if(!ru::getParam(nh, name+"/order", n_from_param, what))
+      {
+        if(!ru::getParam(nh, name+"/dof", n_from_param, what, &n_from_param))
+        {
+          return false;
+        }
+      }
+      int n_from_template = N;
+      int n_from_class = out.xDim();
+
+      int n = n_from_param;
+      if(n_from_template!=-1)
+      {
+        if(n_from_template!=n_from_class)
+        {
+          what = "Error in class construction. The class is a static-allocated templated with dimension " + std::to_string(n_from_class)
+                  +", while the function template is with dimension " + std::to_string(n_from_template);
+          return false;
+        }
+        if((n_from_template!=n_from_param)&&(n_from_param!=-1)) // th default value
+        {
+          what = "Error in class construction. The class is a static-allocated templated with dimension " + std::to_string(n_from_class)
+                  +", while the param specifies a dimension of " + std::to_string(n_from_param);
+          return false;
+        }
+        n = n_from_template; // class properites overridden
+      }
+      else // from param
+      {
+        if(n_from_param!=-1)
+        {
+          n = n_from_param;
+        }
+        else if(n_from_class >0)
+        {
+          n = n_from_param;
+        }
+        else
+        {
+          what = "The system dimension is superimposed to 1, since none parameter is present in the rosparam server, "
+                    "and the controller has never been initialized before.";
+          n = 1;
+        }
+      }
 
       eu::resize(Kp,n,n);
       eu::resize(Ki,n,n);
       eu::setZero(Kp);
       eu::setZero(Ki);
 
-      if(!rosparam_utilities::getParam(nh, name+"/proportional_gain", kp, what))
+      std::vector<double> kp, ki;
+      if(!ru::getParam(nh, name+"/proportional_gain", kp, what))
       {
+        double kp_=0.0;
+        if(!ru::getParam(nh, name+"/proportional_gain", kp_, what))
+        {
+          return false;
+        }
+        kp.push_back(kp_);
+      }
+      if(static_cast<int>(kp.size())!=n)
+      {
+        what += " The param dimension of the 'proportional_gain' " + std::to_string(kp.size())
+                  + " mismatches with the foreseen dimension" + std::to_string(n);
         return false;
       }
       eu::setDiagonal(Kp,kp);
+
       if(it!=_types["PI"].end())
       {
-        double ki=0;
-        if(!rosparam_utilities::getParam(nh, name+"/integral_gain", ki, what))
+        if(!ru::getParam(nh, name+"/integral_gain", ki, what))
+        {
+          double ki_=0;
+          if(!ru::getParam(nh, name+"/integral_gain", ki_, what))
+          {
+            return false;
+          }
+          ki.push_back(ki_);
+        }
+        if(!ru::getParam(nh, name+"/sample_period", sample_period, what))
         {
           return false;
         }
-
-        if(!rosparam_utilities::getParam(nh, name+"/sample_period", sample_period, what))
+        if(static_cast<int>(ki.size())!=n)
         {
+          what += " The param dimension of the 'integral_gain' " + std::to_string(ki.size())
+                    + " mismatches with the foreseen dimension" + std::to_string(n);
           return false;
         }
-
         eu::setDiagonal(Ki,ki);
       }
 
@@ -323,42 +385,52 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
     else if(st!=_types["SS"].end())
     {
       ControllerStateSpaceArgs<N,MN> args;
-
-      if(!getDiscreteStateSpaceArgs(args, nh, name, msg))
+      std::string msg;
+      ok = getDiscreteStateSpaceArgs(args, nh, name, msg);
+      what = to_string(what, ok, msg);
+      if(!ok)
       {
-        what += (what.size()>0? "\n[!]" : "[!]") + msg;
         return false;
       }
-      what += msg.size()>0 ? ( (what.size()>0? "\n[?]" : "[?]") + msg ) : "";
 
       typename Controller<N,MN>::MatrixN aw_gain;  //antiwindup_gain
+      std::vector<double> aw_states(eu::rows(args.A), 0);
 
-      eu::resize(aw_gain,n,n);
-      eu::setZero(aw_gain);
+      std::vector<std::pair<bool, std::string>> checks =
+      { {getDiscreteStateSpaceArgs(args, nh, name, msg),
+           msg},
 
-      std::vector<double> aw_states(out.xDim(),0); //antiwindup_gain
-      ok = rosparam_utilities::getParam(nh, name+"/antiwindup_gain", aw_gain, msg, &aw_gain);
-      what = to_string(what, ok,msg);
+        {ru::getParam(nh, name+"/antiwindup_gain", aw_gain, msg, &aw_gain),
+          msg},
+
+        {ru::getParam(nh, name+"/antiwindup_states", aw_states, msg, &aw_states),
+          msg},
+      };
+
+      for(auto const & c : checks)
+      {
+        ok &= c.first;
+        what = to_string(what, c.first, c.second);
+      }
+
+      if(static_cast<int>(aw_states.size())!=eu::rows(args.A))
+      {
+        ok &= false;
+        what = to_string(what, false,  "antiwindup_states size ("+std::to_string(static_cast<int>(aw_states.size()))+") "
+                                        "is different from the order of the system " + dim(args.A));
+      }
+
+      if(!eu::resize(args.Baw, eu::rows(args.A),eu::rows(args.B)))
+      {
+        ok &= false;
+        what = to_string(what, false,  "Error in resizing the Baw matrix " +dim(args.A));
+      }
+
       if(!ok)
       {
         return false;
       }
 
-      ok = rosparam_utilities::getParam(nh, name+"/antiwindup_states", aw_states, msg, &aw_states);
-      what = to_string(what, ok,msg);
-      if(!ok)
-      {
-        return false;
-      }
-
-      ok = int(aw_states.size())!=out.xDim();
-      what = to_string(what, ok, " antiwindup_states size is wrong '" + name + ".");
-      if(!ok)
-      {
-        return false;
-      }
-
-      eu::resize(args.Baw, eu::rows(args.A),eu::rows(args.B));
       args.Baw = out.B() * aw_gain;
       for(int iord=0;iord<out.xDim();iord++)
       {
@@ -371,34 +443,15 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
         }
       }
 
-      ret = out.setMatrices(args,what);
+      ret = out.setMatrices(args,msg);
       what = to_string(what, ret>0, msg);
-      if(!ret)
+      if(ret<0)
       {
         return false;
       }
 
-      return ret;
+      return ret>=0;
     }
-    else if(type == "none")
-    {
-      ControllerStateSpaceArgs<N,MN> args;
-      eu::resize(args.A  , 1, 1);
-      eu::resize(args.B  , 1, 1);
-      eu::resize(args.C  , 1, 1);
-      eu::resize(args.D  , 1, 1);
-      eu::resize(args.Baw, 1, 1);
-
-      eu::setZero(args.A  );
-      eu::setZero(args.B  );
-      eu::setZero(args.C  );
-      eu::setZero(args.D  );
-      eu::setZero(args.Baw);
-      ret = out.setMatrices(args, msg);
-      what = to_string(what, ret>0,msg);
-      return ret;
-    }
-
     what = "Type '" + type + "' not recognized. The implemented controller types are: ";
     for(auto const & t : _types)
     {

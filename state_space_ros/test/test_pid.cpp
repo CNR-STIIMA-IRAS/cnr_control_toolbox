@@ -9,31 +9,67 @@
 #include <state_space_controllers/controllers.h>
 #include <state_space_ros/ros_params.h>
 
-using ControllerX = eigen_control_toolbox::Controller<-1>;
+namespace ect = eigen_control_toolbox;
+using ControllerX = ect::Controller<-1>;
 
 ros::NodeHandle* nh;
 
+namespace detail
+{
+  struct unwrapper
+  {
+    unwrapper(std::exception_ptr pe) : pe_(pe) {}
+
+    operator bool() const { return bool(pe_);}
+
+    friend auto operator<<(std::ostream& os, unwrapper const& u) -> std::ostream&
+    {
+      try
+      {
+          std::rethrow_exception(u.pe_);
+          return os << "no exception";
+      }
+      catch(std::runtime_error const& e) { return os << "runtime_error: " << e.what();}
+      catch(std::logic_error const& e)   { return os << "logic_error: " << e.what();}
+      catch(std::exception const& e)     { return os << "exception: " << e.what();}
+      catch(...)      {return os << "non-standard exception";}
+    }
+    std::exception_ptr pe_;
+  };
+}
+
+auto unwrap(std::exception_ptr pe)
+{
+  return detail::unwrapper(pe);
+}
+
+template<class F>
+::testing::AssertionResult does_not_throw(F&& f)
+{
+  try
+  {
+     f();
+     return ::testing::AssertionSuccess();
+  }
+  catch(...)
+  {
+     return ::testing::AssertionFailure() << unwrap(std::current_exception());
+  }
+};
 // Declare a test
 TEST(TestSuite, ProportionalController)
 {
-  int ret;
+  int ret=0;
   std::string what;
   EXPECT_NO_FATAL_FAILURE(ControllerX proportional);
   ControllerX proportional;
   
-  EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(proportional,*nh,"/ctrl1", what) );
-  EXPECT_TRUE(ret>=0);
-  if (ret==0)
-  {
-    ROS_WARN("Failing initializing controller ctrl1: %s", what.c_str());
-  }
-  else if(ret==-1)
-  {
-    ROS_ERROR("Failing initializing controller ctrl1: %s", what.c_str());
-  }
+  EXPECT_TRUE(does_not_throw([&]{ret = ect::setMatricesFromParam<-1>(proportional,*nh,"/ctrl1", what);}));
+  ROS_WARN_COND(ret==0, "Failing initializing controller ctrl1: %s", what.c_str());
+  ROS_ERROR_COND(ret==-1, "Failing initializing controller ctrl1: %s", what.c_str());
 
   ROS_INFO("ctrl1:");
-  EXPECT_NO_FATAL_FAILURE(std::cout << proportional << std::endl; );
+  EXPECT_TRUE(does_not_throw([&]{std::cout << proportional << std::endl;}));
 
   for (unsigned int idx=0;idx<200;idx++)
   {
@@ -60,7 +96,7 @@ TEST(TestSuite, ProportionalIntegralController)
   int ret=-1;
   std::string what;
   ControllerX pi;
-  EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(pi,*nh,"/ctrl2", what));
+  EXPECT_NO_FATAL_FAILURE(ret = ect::setMatricesFromParam<-1>(pi,*nh,"/ctrl2", what));
   EXPECT_TRUE(ret>=0);
   if (ret==0)
   {
@@ -96,24 +132,18 @@ TEST(TestSuite, ProportionalIntegralController)
 // Declare a test
 TEST(TestSuite, ControllerSS)
 {
-  int ret;
+  int ret=0;
   std::string what;
   EXPECT_NO_FATAL_FAILURE(ControllerX ctrl_ss);
   ControllerX ctrl_ss;
 
-  EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(ctrl_ss,*nh,"/ss", what) );
-  EXPECT_TRUE(ret>=0);
-  if (ret==0)
-  {
-    ROS_WARN("Failing initializing controller ctrl1: %s", what.c_str());
-  }
-  else if(ret==-1)
-  {
-    ROS_ERROR("Failing initializing controller ctrl1: %s", what.c_str());
-  }
+  EXPECT_TRUE(does_not_throw([&]{ret = ect::setMatricesFromParam<-1>(ctrl_ss,*nh,"/ss", what);}));
+  ROS_WARN_COND(ret==0, "Warning(s) raised while initializing the controller ss: %s", what.c_str());
+  ROS_ERROR_COND(ret==-1, "Error(s) raised while initializing controller ss: %s", what.c_str());
 
-  ROS_INFO("ctrl1:");
-  EXPECT_NO_FATAL_FAILURE(std::cout << ctrl_ss << std::endl; );
+  ROS_INFO("ctrl_ss:");
+  EXPECT_TRUE(does_not_throw([&]{std::cout << ctrl_ss << std::endl;}));
+
 
   for (unsigned int idx=0;idx<200;idx++)
   {
