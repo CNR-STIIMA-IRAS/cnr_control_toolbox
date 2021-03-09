@@ -103,7 +103,7 @@ public:
    * 
    * @return -1 if any error (reported in msg), 0 if any warnings (reported in msg), 1 if ok
    */
-  virtual int setMatrices (const BaseStateSpaceArgs& args, std::string& msg) override;
+  virtual bool setMatrices (const BaseStateSpaceArgs& args, std::string& msg) override;
   virtual Eigen::Map<Eigen::MatrixXd const> getA() const override;
   virtual Eigen::Map<Eigen::MatrixXd const> getB() const override;
   virtual Eigen::Map<Eigen::MatrixXd const> getC() const override;

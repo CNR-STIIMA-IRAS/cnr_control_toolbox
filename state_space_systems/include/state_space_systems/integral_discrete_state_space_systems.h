@@ -80,7 +80,7 @@ public:
 
   IntegralDiscreteStateSpace(const IntegralDiscreteStateSpaceArgs& args);
 
-  virtual int setMatrices(const BaseStateSpaceArgs& args, std::string& msg) override;
+  virtual bool setMatrices(const BaseStateSpaceArgs& args, std::string& msg) override;
 
 protected:
   double dt_;

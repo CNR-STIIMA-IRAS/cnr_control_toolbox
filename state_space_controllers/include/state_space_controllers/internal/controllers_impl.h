@@ -14,45 +14,43 @@ namespace eigen_control_toolbox
 
 
 template<int N, int MN>
-inline int Controller<N,MN>::setAntiWindupMatrix(const typename Controller<N,MN>::MatrixN& Baw, std::string& what)
+inline bool Controller<N,MN>::setAntiWindupMatrix(const typename Controller<N,MN>::MatrixN& Baw, std::string& what)
 {
   if(this->xDim()==0)
   {
     what = std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__) + std::string(":")
          + " The system has not been yet initialized. Abort.";
-    return -1;
+    return false;
   }
   
   if(eu::rows(Baw)!=this->xDim())
   {
     what = std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__) + std::string(":")
          + " The input dimension mismatches with the system dimension. Abort.";
-    return -1;
+    return false;
   }
   
   if(eu::rows(Baw)!=eu::cols(Baw))
   {
     what = std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__) + std::string(":")
          + " The input matrix must be a square matrix.";
-    return -1;
+    return false;
   }  
   
   m_Baw = Baw;
-  return 1;
+  return true;
 }
 
 template<int N, int MN>
-inline int Controller<N,MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& what)
+inline bool Controller<N, MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& what)
 {
   try
   {
     what = "";
-    int ret = eigen_control_toolbox::DiscreteStateSpace<N,N,N,MN,MN,MN>::setMatrices(args, what);
-    if(ret!=1)
+    bool ok = eigen_control_toolbox::DiscreteStateSpace<N,N,N,MN,MN,MN>::setMatrices(args, what);
+    if(!ok)
     {
-      what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ":\n" +  what;
-      if(ret==-1)
-        return -1;
+      return false;
     }
 
     const ControllerStateSpaceArgs<N,MN>& _args = dynamic_cast< const ControllerStateSpaceArgs<N,MN>& >(args);
@@ -60,10 +58,10 @@ inline int Controller<N,MN>::setMatrices(const BaseStateSpaceArgs& args, std::st
   }
   catch(std::exception& e)
   {
-    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
-    return -1;
+    what += std::string(__PRETTY_FUNCTION__) + ": Caught an exception: " + std::string(e.what());
+    return false;
   }
-  return what.size() > 0 ? 0 : 1;
+  return true;
 }
 
 
@@ -78,7 +76,7 @@ inline void Controller<N,MN>::antiwindup(const Controller<N,MN>::Value& saturate
 
 
 template<int N, int MN>
-inline int Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
+inline bool Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
                                    const Controller<N,MN>::MatrixN &Ki,
                                    const double& sampling_period,
                                    std::string& what)
@@ -90,17 +88,17 @@ inline int Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
     if(eu::rows(Kp)!=eu::rows(Kp))
     {
       what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Kp matrix must be square";
-      return -1;
+      return false;
     }
     if(eu::rows(Ki)!=eu::cols(Ki))
     {
       what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Ki matrix must be square";
-      return -1;
+      return false;
     }
     if(eu::rows(Kp)!=eu::cols(Ki))
     {
       what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Input matrixes are of different dimension";
-      return -1;
+      return false;
     }
     eu::resize(args.A  , eu::rows(Kp), eu::cols(Kp));
     eu::resize(args.B  , eu::rows(Kp), eu::cols(Kp));
@@ -109,7 +107,9 @@ inline int Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
     eu::resize(args.Baw, eu::rows(Kp), eu::cols(Kp));
   }
 
+  std::cout << __LINE__ << ":" << Kp << std::endl;
   this->m_D = Kp;
+  std::cout << __LINE__ << ":" << this->m_D << std::endl;
 
   if(eu::norm(Ki)==0.0)
   {
@@ -137,13 +137,11 @@ inline int Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
     args.D = Kp;
   }
 
-  int ret = this->setMatrices(args,what);
-  if(ret!=1)
-  {
-     what += std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__)
-          + ": Failed in setting the matrices.";
-  }
-  return ret;
+  std::string msg;
+  bool ok = this->setMatrices(args,what);
+  what = ok ? msg : std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__)
+          + ": Failed in setting the matrices:" + msg;
+  return ok;
 }
 
 }  // namespace  eigen_control_toolbox

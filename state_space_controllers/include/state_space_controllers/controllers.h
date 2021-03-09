@@ -31,15 +31,15 @@ public:
   Controller() = default;
   Controller(const ControllerStateSpaceArgs<N,MaxN>& args);
 
-  int setMatrices(const BaseStateSpaceArgs& args, std::string&  what) override;
+  bool setMatrices(const BaseStateSpaceArgs& args, std::string&  what) override;
 
   //! If the dimension of the system if dynamic-size allocation, 
   //! the Baw dimension must be equalt to the system dimension
   //! if the system dimension is not yet defined, an error is returned
-  //! @return -1 if dimension mismatch, 0 if warning, 1 if ok. Error/warning are reporte in 'what'
-  int setAntiWindupMatrix(const MatrixN& Baw, std::string& what);
+  //! @return false if errors, true if ok. Error(s)/warning(s) are reported in 'what'
+  bool setAntiWindupMatrix(const MatrixN& Baw, std::string& what);
 
-  int setPI(const MatrixN& Kp,const MatrixN& Ki, const double& sampling_period, std::string& what);
+  bool setPI(const MatrixN& Kp,const MatrixN& Ki, const double& sampling_period, std::string& what);
 
   void antiwindup(const Value& saturated_output, const Value& unsaturated_output);
 

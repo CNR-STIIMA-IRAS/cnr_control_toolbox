@@ -46,6 +46,66 @@
 
 constexpr size_t cycles = 1e4;
 
+
+namespace detail
+{
+  struct unwrapper
+  {
+    unwrapper(std::exception_ptr pe) : pe_(pe) {}
+
+    operator bool() const
+    {
+      return bool(pe_);
+    }
+
+    friend auto operator<<(std::ostream& os, unwrapper const& u) -> std::ostream&
+    {
+      try
+      {
+          std::rethrow_exception(u.pe_);
+          return os << "no exception";
+      }
+      catch(std::runtime_error const& e)
+      {
+          return os << "runtime_error: " << e.what();
+      }
+      catch(std::logic_error const& e)
+      {
+          return os << "logic_error: " << e.what();
+      }
+      catch(std::exception const& e)
+      {
+          return os << "exception: " << e.what();
+      }
+      catch(...)
+      {
+          return os << "non-standard exception";
+      }
+    }
+    std::exception_ptr pe_;
+  };
+}
+
+auto unwrap(std::exception_ptr pe)
+{
+  return detail::unwrapper(pe);
+}
+
+template<class F>
+::testing::AssertionResult does_not_throw(F&& f)
+{
+  try
+  {
+     f();
+     return ::testing::AssertionSuccess();
+  }
+  catch(...)
+  {
+     return ::testing::AssertionFailure() << unwrap(std::current_exception());
+  }
+};
+
+
 // Declare a test
 TEST(TestSuite, FilteredScalar)
 {

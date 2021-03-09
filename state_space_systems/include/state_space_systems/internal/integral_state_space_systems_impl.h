@@ -125,7 +125,7 @@ inline IntegralStateSpace<K,N,MK,MN>::IntegralStateSpace(const IntegralStateSpac
 
 
 template<int K, int N, int MK, int MN>
-inline int IntegralStateSpace<K,N,MK,MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
+inline bool IntegralStateSpace<K, N, MK, MN>::setMatrices(const BaseStateSpaceArgs& args, std::string& msg)
 {
   const IntegralStateSpaceArgs& _iargs = dynamic_cast<const IntegralStateSpaceArgs&>(args);
   DiscreteStateSpaceArgs<IntegralStateSpaceSymbols<K,N,MK,MN>::S, N, N,
@@ -138,29 +138,29 @@ inline int IntegralStateSpace<K,N,MK,MN>::setMatrices(const BaseStateSpaceArgs& 
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ )
           + " You are trying to resize a static-allocated system with a different number of order and/or dof. Abort.";
-    return -1;
+    return false;
   }
   ///////////////////////////////////
 
   if(!defaultIntegralStateSpaceMatrixA(_oargs.A, _iargs.order,_iargs.degrees_of_freedom))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting A";
-    return -1;
+    return false;
   }
   if(!defaultIntegralStateSpaceMatrixB(_oargs.B,_iargs.order,_iargs.degrees_of_freedom))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting B";
-    return -1;
+    return false;
   }
   if(!defaultIntegralStateSpaceMatrixC(_oargs.C,_iargs.order,_iargs.degrees_of_freedom))
   {
     msg += std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting C";
-    return -1;
+    return false;
   }
   if(!defaultIntegralStateSpaceMatrixD(_oargs.D,_iargs.order,_iargs.degrees_of_freedom))
   {
     msg + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string( __LINE__ ) + " error in setting D";
-    return -1;
+    return false;
   }
 
   // call the father function, that copy the matrices inside base class

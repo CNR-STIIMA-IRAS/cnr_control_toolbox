@@ -26,11 +26,11 @@ namespace eigen_control_toolbox
  *       ROS dependency to the lib
  * @param[in] nh Node Handle
  * @param[in] name name of the namespace for the
- * @param[out]  A Matrix A
- * @param[out]  B Matrix B
- * @param[out]  C Matrix C
- * @param[out]  D Matrix D
- * @param[out]  what a string with the error, if something wrong happen inside
+ * @param[out] A Matrix A
+ * @param[out] B Matrix B
+ * @param[out] C Matrix C
+ * @param[out] D Matrix D
+ * @param[out] what a string with the error, if something wrong happen inside
  * @return bool false if the params are not found in the param server, true otherwise
  * */
 bool importMatricesFromParam( const ros::NodeHandle&  nh,
