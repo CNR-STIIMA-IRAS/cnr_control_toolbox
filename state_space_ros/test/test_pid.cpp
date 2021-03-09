@@ -55,7 +55,8 @@ template<class F>
   {
      return ::testing::AssertionFailure() << unwrap(std::current_exception());
   }
-};
+}
+
 // Declare a test
 TEST(TestSuite, ProportionalController)
 {
@@ -96,19 +97,12 @@ TEST(TestSuite, ProportionalIntegralController)
   int ret=-1;
   std::string what;
   ControllerX pi;
-  EXPECT_NO_FATAL_FAILURE(ret = ect::setMatricesFromParam<-1>(pi,*nh,"/ctrl2", what));
-  EXPECT_TRUE(ret>=0);
-  if (ret==0)
-  {
-    ROS_WARN("Failing initializing controller ctrl2: %s", what.c_str());
-  }
-  else if(ret==-1)
-  {
-    ROS_ERROR("Failing initializing controller ctrl2: %s", what.c_str());
-  }
+  EXPECT_TRUE(does_not_throw([&]{ret = ect::setMatricesFromParam<-1>(pi,*nh,"/ctrl2", what);}));
+  ROS_WARN_COND(ret==0, "Failing initializing controller ctrl12: %s", what.c_str());
+  ROS_ERROR_COND(ret==-1, "Failing initializing controller ctrl2: %s", what.c_str());
 
   ROS_INFO("ctrl2:");
-  EXPECT_NO_FATAL_FAILURE(std::cout << pi << std::endl; );
+  EXPECT_TRUE(does_not_throw([&]{std::cout << pi << std::endl; }));
 
   for (unsigned int idx=0;idx<200;idx++)
   {

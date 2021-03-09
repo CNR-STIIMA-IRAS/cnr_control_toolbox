@@ -81,36 +81,35 @@ inline bool Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
                                    const double& sampling_period,
                                    std::string& what)
 {
-  ControllerStateSpaceArgs<N,MN> args;
+  bool ret = true;
   what = "";
-  if(N==-1)
+
+  ControllerStateSpaceArgs<N,MN> args;
+
+  std::vector<std::pair<bool, std::string>> checks =
   {
-    if(eu::rows(Kp)!=eu::rows(Kp))
-    {
-      what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Kp matrix must be square";
-      return false;
-    }
-    if(eu::rows(Ki)!=eu::cols(Ki))
-    {
-      what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Ki matrix must be square";
-      return false;
-    }
-    if(eu::rows(Kp)!=eu::cols(Ki))
-    {
-      what += "\n" + std::string(__PRETTY_FUNCTION__) + ":" + std::to_string(__LINE__) + ": Input matrixes are of different dimension";
-      return false;
-    }
-    eu::resize(args.A  , eu::rows(Kp), eu::cols(Kp));
-    eu::resize(args.B  , eu::rows(Kp), eu::cols(Kp));
-    eu::resize(args.C  , eu::rows(Kp), eu::cols(Kp));
-    eu::resize(args.D  , eu::rows(Kp), eu::cols(Kp));
-    eu::resize(args.Baw, eu::rows(Kp), eu::cols(Kp));
+    { (N==-1) && (eu::rows(Kp)==eu::rows(Kp)), "Kp matrix is not squared" },
+    { (N==-1) && (eu::rows(Ki)==eu::rows(Ki)), "Ki matrix is not squared" },
+    { (N==-1) && (eu::rows(Kp)==eu::cols(Ki)), "Kp and Ki matrixes are of different dimension" },
+    { (N==-1) && eu::resize(args.A  , eu::rows(Kp), eu::cols(Kp)), "Error in resizing A  . Check memory allcoation"},
+    { (N==-1) && eu::resize(args.B  , eu::rows(Kp), eu::cols(Kp)), "Error in resizing B  . Check memory allcoation"},
+    { (N==-1) && eu::resize(args.C  , eu::rows(Kp), eu::cols(Kp)), "Error in resizing C  . Check memory allcoation"},
+    { (N==-1) && eu::resize(args.D  , eu::rows(Kp), eu::cols(Kp)), "Error in resizing D  . Check memory allcoation"},
+    { (N==-1) && eu::resize(args.Baw, eu::rows(Kp), eu::cols(Kp)), "Error in resizing Baw. Check memory allcoation"},
+  };
+
+  for(auto c : checks)
+  {
+    ret &= c.first;
+    what += c.first ? "" : (what.size()>0?"\n":"") + c.second;
+  }
+  if(!ret)
+  {
+    return false;
   }
 
-  std::cout << __LINE__ << ":" << Kp << std::endl;
-  this->m_D = Kp;
-  std::cout << __LINE__ << ":" << this->m_D << std::endl;
 
+  args.D = Kp;
   if(eu::norm(Ki)==0.0)
   {
     eu::setZero(args.A);
@@ -138,10 +137,10 @@ inline bool Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
   }
 
   std::string msg;
-  bool ok = this->setMatrices(args,what);
-  what = ok ? msg : std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__)
+  ret = this->setMatrices(args,msg);
+  what = ret ? msg : std::string(__PRETTY_FUNCTION__) + std::string(":") + std::to_string(__LINE__)
           + ": Failed in setting the matrices:" + msg;
-  return ok;
+  return ret;
 }
 
 }  // namespace  eigen_control_toolbox

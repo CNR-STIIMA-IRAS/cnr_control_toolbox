@@ -52,6 +52,8 @@ inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseState
 {
   try
   {
+    msg ="";
+
     const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& _args
         = dynamic_cast<const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>&>(args);
 
@@ -67,7 +69,6 @@ inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseState
     {
       eu::resize(m_output, eu::rows(_args.C), 1);
     }
-    msg += std::string(__PRETTY_FUNCTION__) + ":\n\t";
 
     if(!eu::checkInputDim("Matrix A", _args.A, xDim(), xDim(), msg)) return false;
     if(!eu::checkInputDim("Matrix B", _args.B, xDim(), uDim(), msg)) return false;
@@ -83,6 +84,7 @@ inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseState
     eu::resize(m_Obs, yDim()*xDim(), xDim()); // Obs is (OxS) x S
     eu::resize(m_i2o, yDim()*xDim(), uDim()*xDim() );  // i2o is (OxS) x (IxS))
 
+    msg ="";
     if(!computeObservabilityMatrix(m_Obs, m_A, m_C, xDim() ))
     {
       msg += "The observability matrix is Rank-deficient.";
@@ -92,13 +94,13 @@ inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseState
     {
       msg += "The controllability matrix is Rank-deficient.";
     }
-    return true;
   }
   catch(std::exception& e)
   {
-    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what();
+    msg += __PRETTY_FUNCTION__ + std::string(": Caught an exception: ") + e.what();
+    return false;
   }
-  return false;
+  return true;
 }
 
 template<int S, int I, int O, int MS, int MI, int MO> 

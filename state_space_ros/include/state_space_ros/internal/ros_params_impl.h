@@ -13,23 +13,23 @@ namespace eu = eigen_utils;
 namespace eigen_control_toolbox
 {
 
-inline std::string to_string(const std::string& what, const bool& ret, const std::string& msg)
+//!
+inline std::string append_string(const std::string& what, const bool& ret, const std::string& msg)
 {
   return what + (what.size()>0?"\n":"") +
     ( ret ? (msg.size()==0? "" : "" + msg) : "[!]" + msg);
 }
 
+//!
 inline std::string dim(const Eigen::MatrixXd& m)
 {
   return "(" + std::to_string(eu::rows(m)) +"x"+std::to_string(eu::cols(m)) + ")";
 }
 
+//!
 inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
                                     const std::string&      name,
-                                    Eigen::MatrixXd&        A,
-                                    Eigen::MatrixXd&        B,
-                                    Eigen::MatrixXd&        C,
-                                    Eigen::MatrixXd&        D,
+                                    Eigen::MatrixXd &A, Eigen::MatrixXd &B, Eigen::MatrixXd &C, Eigen::MatrixXd &D,
                                     std::string&            what)
 {
   what="";
@@ -71,6 +71,7 @@ inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
   return true;
 }
 
+//!
 template<int S, int I, int O, int MS, int MI, int MO>
 inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& args,
                                         const ros::NodeHandle& nh,
@@ -88,9 +89,9 @@ inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& ar
     Eigen::MatrixXd D;
 
     std::string msg;
-    bool ok = importMatricesFromParam(nh, name, A,B,C,D, msg);
-    what = to_string(what, ok,msg);
-    if(!ok)
+    ret = importMatricesFromParam(nh, name, A,B,C,D, msg);
+    what = append_string(what, ret,msg);
+    if(!ret)
     {
        return false;
     }
@@ -116,56 +117,46 @@ inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& ar
     for(auto const & c: operations)
     {
       what += c.first ? "" : (what.size()>0?"\n":"") + c.second;
-      ok &= c.first;
-    }
-    if(!ok)
-    {
-      return false;
+      ret &= c.first;
     }
   }
   catch(std::exception& e)
   {
-    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
+    what = append_string(what, false, "Caught an exception: " + std::string(e.what()));
     return false;
   }
   return ret;
-
 }
 
-
+//!
 template<int S, int I, int O, int MS, int MI, int MO>
 inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
                             const ros::NodeHandle& nh,
                               const std::string& name,
                                 std::string& what)
 {
+  bool ret = true;
   try
   {
-    std::string msg;
     DiscreteStateSpaceArgs<S,I,O,MS,MI,MO> args;
-    if(!getDiscreteStateSpaceArgs(args, nh, name, msg))
+    if(!getDiscreteStateSpaceArgs(args, nh, name, what))
     {
-      what += (what.size()>0? "\n[!]" : "[!]") + msg;
       return false;
     }
-    what += msg.size()>0 ? ( (what.size()>0? "\n" : "") + msg ) : "";
 
-    if(!out.setMatrices(args,msg))
-    {
-      what += (what.size()>0? "\n[!]" : "[!]") + msg;
-      return false;
-    }
-    what += msg.size()>0 ? ( (what.size()>0? "\n" : "") + msg ) : "";
+    std::string msg;
+    ret = out.setMatrices(args,msg);
+    what = append_string(what, ret, msg);
   }
   catch(std::exception& e)
   {
-    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
+    what = append_string(what, ret, "Caught an exception: " +std::string(e.what()));
     return false;
   }
-  return true;
+  return ret;
 }
 
-
+//!
 template<int K,int N,int MK,int MN>
 inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
                                   const ros::NodeHandle& nh,
@@ -203,7 +194,7 @@ inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
   return out.setMatrices(args,what);
 }
 
-
+//!
 template<int K,int N,int MK,int MN>
 inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
                                   const ros::NodeHandle& nh,
@@ -256,14 +247,14 @@ inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
   return ret;
 }
 
+//!
 template<int N, int MN>
 inline bool setMatricesFromParam(Controller<N,MN>& out,
     const ros::NodeHandle& nh,const std::string& name,std::string& what)
 {
-  bool ok = true;
+  bool ret = true;
   try
   {
-    int ret = 1;
     std::map<std::string,std::vector<std::string>> _types =
     { {"P"  , {"proportional_controller", "p_controller", "P_controller", "PROPORTIONAL",  "proportional", "p", "P"}},
       {"PI" , {"integral_proportional_controller", "pi_controller",
@@ -274,9 +265,9 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
 
     what="Param '"+name+"'";
     std::string msg;
-    bool ok = ru::getParam(nh,name+"/type",type, msg, &type);
-    what = to_string(what, ok,msg);
-    if(!ok)
+    ret = ru::getParam(nh,name+"/type",type, msg, &type);
+    what = append_string(what, ret,msg);
+    if(!ret)
     {
       return false;
     }
@@ -284,7 +275,10 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
     auto pt = std::find_if(_types["P" ].begin(),_types["P"]. end(), [type](const auto& v){return v == type;});
     auto it = std::find_if(_types["PI"].begin(),_types["PI"].end(), [type](const auto& v){return v == type;});
     auto st = std::find_if(_types["SS"].begin(),_types["SS"].end(), [type](const auto& v){return v == type;});
+
+    //==
     if((pt!=_types["P"].end())||(it!=_types["PI"].end()))
+    //==
     {
       typename Controller<N,MN>::MatrixN Kp, Ki;
       int n_from_param = -1;
@@ -303,14 +297,16 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
       {
         if(n_from_template!=n_from_class)
         {
-          what = "Error in class construction. The class is a static-allocated templated with dimension " + std::to_string(n_from_class)
-                  +", while the function template is with dimension " + std::to_string(n_from_template);
+          what = "Error in class construction. The class is a static-allocated templated with dimension "
+                  + std::to_string(n_from_class)+", while the function template is with dimension "
+                    + std::to_string(n_from_template);
           return false;
         }
         if((n_from_template!=n_from_param)&&(n_from_param!=-1)) // th default value
         {
-          what = "Error in class construction. The class is a static-allocated templated with dimension " + std::to_string(n_from_class)
-                  +", while the param specifies a dimension of " + std::to_string(n_from_param);
+          what = "Error in class construction. The class is a static-allocated templated with dimension "
+                  + std::to_string(n_from_class) + ", while the param specifies a dimension of "
+                    + std::to_string(n_from_param);
           return false;
         }
         n = n_from_template; // class properites overridden
@@ -380,15 +376,17 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
         eu::setDiagonal(Ki,ki);
       }
 
-      return out.setPI(Kp,Ki,sample_period, what);
+      ret = out.setPI(Kp,Ki,sample_period, what);
     }
+    //==
     else if(st!=_types["SS"].end())
+    //==
     {
       ControllerStateSpaceArgs<N,MN> args;
       std::string msg;
-      ok = getDiscreteStateSpaceArgs(args, nh, name, msg);
-      what = to_string(what, ok, msg);
-      if(!ok)
+      ret = getDiscreteStateSpaceArgs(args, nh, name, msg);
+      what = append_string(what, ret, msg);
+      if(!ret)
       {
         return false;
       }
@@ -397,36 +395,29 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
       std::vector<double> aw_states(eu::rows(args.A), 0);
 
       std::vector<std::pair<bool, std::string>> checks =
-      { {getDiscreteStateSpaceArgs(args, nh, name, msg),
-           msg},
-
-        {ru::getParam(nh, name+"/antiwindup_gain", aw_gain, msg, &aw_gain),
-          msg},
-
-        {ru::getParam(nh, name+"/antiwindup_states", aw_states, msg, &aw_states),
-          msg},
-      };
+      { {ru::getParam(nh, name+"/antiwindup_gain", aw_gain, msg, &aw_gain), msg},
+        {ru::getParam(nh, name+"/antiwindup_states", aw_states, msg, &aw_states), msg} };
 
       for(auto const & c : checks)
       {
-        ok &= c.first;
-        what = to_string(what, c.first, c.second);
+        ret &= c.first;
+        what = append_string(what, c.first, c.second);
       }
 
       if(static_cast<int>(aw_states.size())!=eu::rows(args.A))
       {
-        ok &= false;
-        what = to_string(what, false,  "antiwindup_states size ("+std::to_string(static_cast<int>(aw_states.size()))+") "
+        ret &= false;
+        what = append_string(what, false,  "antiwindup_states size ("+std::to_string(static_cast<int>(aw_states.size()))+") "
                                         "is different from the order of the system " + dim(args.A));
       }
 
       if(!eu::resize(args.Baw, eu::rows(args.A),eu::rows(args.B)))
       {
-        ok &= false;
-        what = to_string(what, false,  "Error in resizing the Baw matrix " +dim(args.A));
+        ret &= false;
+        what = append_string(what, false,  "Error in resizing the Baw matrix " +dim(args.A));
       }
 
-      if(!ok)
+      if(!ret)
       {
         return false;
       }
@@ -444,29 +435,29 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
       }
 
       ret = out.setMatrices(args,msg);
-      what = to_string(what, ret>0, msg);
-      if(ret<0)
-      {
-        return false;
-      }
-
-      return ret>=0;
+      what = append_string(what, ret, msg);
     }
-    what = "Type '" + type + "' not recognized. The implemented controller types are: ";
-    for(auto const & t : _types)
+    // ======
+    else
+    // ======
     {
-      what +="\n\t- ";
-      for(auto const & v : t.second)
-        what +="'" + v + "',";
-      what +=" (these are equivalent options!)";
+      what = "Type '" + type + "' not recognized. The implemented controller types are: ";
+      for(auto const & t : _types)
+      {
+        what +="\n\t- ";
+        for(auto const & v : t.second)
+          what +="'" + v + "',";
+        what +=" (these are equivalent options!)";
+      }
+      ret = false;
     }
   }
   catch(std::exception& e)
   {
-    std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Caught an exception: " << e.what() << std::endl;
+    what = append_string(what, ret, "Caught an exception: " + std::string(e.what()));
     return false;
   }
-  return false;
+  return ret;
 }
 
 }
