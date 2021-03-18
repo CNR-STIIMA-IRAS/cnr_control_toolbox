@@ -31,6 +31,11 @@ protected:
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  using Symbols = DiscreteStateSpaceSymbols<N,N,N,MaxN,MaxN,MaxN>;
+  using Input   = typename Symbols::Input;
+  using Output  = typename Symbols::Output;
+
   
   typedef std::shared_ptr<FirstOrderLowPass<N,MaxN>> Ptr;
   typedef std::shared_ptr<FirstOrderLowPass<N,MaxN> const> ConstPtr;
@@ -52,8 +57,13 @@ public:
   double getNaturalFrequency()const {return m_natural_frequency;}
   double getChannels() const {return m_channels;}
 
-  virtual bool setStateFromIO(const Eigen::VectorXd& past_inputs, const Eigen::VectorXd& past_outputs);
-  virtual bool setStateFromLastIO(const Input& inputs, const Output& outputs);
+  [[deprecated("setStateFromLastIO: since it is a filter, you should call setStateFromLastInput()")]]
+  virtual bool setStateFromLastIO(const Input& inputs, const Output& outputs) final 
+  {
+    return DiscreteStateSpace<N,N,N,MaxN,MaxN,MaxN>::setStateFromLastIO(inputs,outputs);
+  }
+  
+  virtual bool setStateFromLastInput(const Input& inputs, const Output& outputs);
 };
 
 //!

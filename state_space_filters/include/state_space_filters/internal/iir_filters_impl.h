@@ -287,7 +287,7 @@ inline bool FirstOrderHighPass<N,MaxN>::computeMatrices( )
   
   // xn=coef*x+(1-coef)*u
   // y=x;
-  // Dy=(xn-x)/st=(coef-1)/st*x+(1-coef)/st*u
+  // Dy=(xn-x)/st=(coef-1)/st*x + (1-coef)/st*u
   
   double coef=std::exp(-this->m_sampling_period*this->m_natural_frequency);
   args.A *= coef;
@@ -364,6 +364,18 @@ inline bool FirstOrderHighPass<N,MaxN>::importMatricesFromParam(const ros::NodeH
   }
 
   return computeMatrices( );
+}
+
+
+template<int N, int MaxN>
+inline bool FirstOrderHighPass<N,MaxN>::setStateFromLastInput(const typename FirstOrderHighPass<N,MaxN>::Input& input)
+{
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", m_input, eu::rows(input), eu::cols(input));
+  
+  m_state = input;
+  m_input = input;
+  m_output = input;
+  return true;
 }
 
 
