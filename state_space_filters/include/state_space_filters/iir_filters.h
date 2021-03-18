@@ -51,6 +51,9 @@ public:
 
   double getNaturalFrequency()const {return m_natural_frequency;}
   double getChannels() const {return m_channels;}
+
+  virtual bool setStateFromIO(const Eigen::VectorXd& past_inputs, const Eigen::VectorXd& past_outputs);
+  virtual bool setStateFromLastIO(const Input& inputs, const Output& outputs);
 };
 
 //!

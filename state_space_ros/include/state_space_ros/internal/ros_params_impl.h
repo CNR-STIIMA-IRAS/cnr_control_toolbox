@@ -27,56 +27,92 @@ inline std::string dim(const Eigen::MatrixXd& m)
 }
 
 //!
-inline bool importMatricesFromParam(const ros::NodeHandle&  nh,
-                                    const std::string&      name,
+inline bool importMatricesFromParam(const ros::NodeHandle& nh,
+                                    const std::string& name,
                                     Eigen::MatrixXd &A, Eigen::MatrixXd &B, Eigen::MatrixXd &C, Eigen::MatrixXd &D,
-                                    std::string&            what)
+                                    std::string& what)
 {
   what="";
+  std::string msg;
+  std::string ns = (name.find("/") == 0) ? name : nh.getNamespace() + "/" + name;
   std::string type = "state-space";
-  if(!ru::getParam(nh,name+"/type",type, what, &type))
+
+  bool ok = ru::get(ns+"/type",type, msg, &type);
+  what += msg.size()==0? "" : (what.size()>0? "\n" :"") + std::string(ok? "[?]" : "[!]" ) + msg;
+  if(!ok)
   {
     return false;
   }
 
   if (!type.compare("unity"))
   {
-    A.resize(1,1);
-    B.resize(1,1);
-    C.resize(1,1);
-    D.resize(1,1);
+    int dim;
+    if(!ru::get(ns+"/order", dim, msg))
+    {
+      if(!ru::get(ns+"/dof", dim, msg))
+      {
+        what += (what.size()>0? "\n[!]" :"[!]") + msg;
+        return false;
+      }
+    }
+
+    A.resize(dim,dim);
+    B.resize(dim,dim);
+    C.resize(dim,dim);
+    D.resize(dim,dim);
     A.setZero();
     B.setZero();
     C.setZero();
-    D(0,0)=1;
+    D.setIdentity();
     return true;
   }
 
-  if(!ru::getParam(nh, name+"/A", A, what))
+  if(!ru::get(ns + "/A", A, what))
   {
     return false;
   }
-  if(!ru::getParam(nh, name+"/B", B, what))
+  if(!ru::get(ns+"/B", B, what))
   {
     return false;
   }
-  if(!ru::getParam(nh, name+"/C", C, what))
+  if(!ru::get(ns+"/C", C, what))
   {
     return false;
   }
-  if(!ru::getParam(nh, name+"/D", D, what))
+  if(!ru::get(ns+"/D", D, what))
   {
     return false;
   }
+  if(A.rows()!=B.rows())
+  {
+    what = "The "+ nh.getNamespace()+"/"+ name+"/A has a numbers of rows that is different from B";
+    return false;
+  }
+  if(A.cols()!=C.cols())
+  {
+    what = "The "+ nh.getNamespace()+"/"+ name+"/A has a numbers of cols that is different from C";
+    return false;
+  }
+  if(C.rows()!=D.rows())
+  {
+    what = "The "+ nh.getNamespace()+"/"+ name+"/C has a numbers of cols that is different from D";
+    return false;
+  }
+  if(D.cols()!=B.rows())
+  {
+    what = "The "+ nh.getNamespace()+"/"+ name+"/B has a numbers of cols that is different from D";
+    return false;
+  }
+
   return true;
 }
 
 //!
 template<int S, int I, int O, int MS, int MI, int MO>
 inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& args,
-                                        const ros::NodeHandle& nh,
-                                          const std::string& name,
-                                            std::string& what)
+                                      const ros::NodeHandle& nh,
+                                      const std::string& name,
+                                      std::string& what)
 {
   bool ret = true;
   try
@@ -131,8 +167,8 @@ inline bool getDiscreteStateSpaceArgs(DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& ar
 //!
 template<int S, int I, int O, int MS, int MI, int MO>
 inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
-                            const ros::NodeHandle& nh,
-                              const std::string& name,
+                                const ros::NodeHandle& nh,
+                                const std::string& name,
                                 std::string& what)
 {
   bool ret = true;
@@ -159,9 +195,9 @@ inline bool setMatricesFromParam(DiscreteStateSpace<S,I,O,MS,MI,MO>& out,
 //!
 template<int K,int N,int MK,int MN>
 inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
-                                  const ros::NodeHandle& nh,
-                                    const std::string& name,
-                                      std::string& what)
+                                 const ros::NodeHandle& nh,
+                                 const std::string& name,
+                                 std::string& what)
 {
   what="";
 
@@ -197,9 +233,9 @@ inline bool setMatricesFromParam(IntegralStateSpace<K,N,MK,MN>& out,
 //!
 template<int K,int N,int MK,int MN>
 inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
-                                  const ros::NodeHandle& nh,
-                                    const std::string& name,
-                                      std::string& what)
+                                const ros::NodeHandle& nh,
+                                const std::string& name,
+                                std::string& what)
 {
   bool ret = true;
   try
@@ -250,7 +286,7 @@ inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
 //!
 template<int N, int MN>
 inline bool setMatricesFromParam(Controller<N,MN>& out,
-    const ros::NodeHandle& nh,const std::string& name,std::string& what)
+    const ros::NodeHandle& nh,const std::string& name,std::string& what, int default_state_dimension)
 {
   bool ret = true;
   try
