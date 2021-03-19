@@ -1,27 +1,23 @@
-os: linux
+# Travis Continuous Integration Configuration File For ROS Control Projects
+# Author: Dave Coleman
 language: generic
-dist: bionic
+services:
+  - docker
 
-branches:
-  only:
-  - master
-
-jobs:
-  include:
-    - name: ROS tests
-      services:
-        - docker
-      env:
-        - ROS_DISTRO="melodic"
-        # Temporary dependency on code_coverage that isn't released
-        - UPSTREAM_WORKSPACE=".upstream.repos"
-        # Need curl for upload to codecov
-        - ADDITIONAL_DEBS="curl"
-        # Configure properly so we can run coverage
-        - CMAKE_ARGS="-DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug"
-        # Run coverage testing
-        - AFTER_SCRIPT="./.coverage.sh"
-      install:
-        - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
-      script:
-        - source ./.codecov.sh && .industrial_ci/travis.sh
+notifications:
+  email:
+    recipients:
+      - nicola.pedrocchi@stiima.cnr.com
+    on_success: change #[always|never|change] # default: change
+    on_failure: change #[always|never|change] # default: always
+env:
+  global:
+    - UPSTREAM_WORKSPACE='cnr_control_toolbox.rosinstall -cnr_control_toolbox'
+  matrix:
+    - ROS_DISTRO=noetic ROS_REPO=ros
+    - ROS_DISTRO=noetic ROS_REPO=ros-testing
+    - ROS_DISTRO=noetic DOWNSTREAM_WORKSPACE='ros_control.rosinstall -ros_control -realtime_tools -control_toolbox -control_msgs'
+install:
+  - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
+script:
+  - .industrial_ci/travis.sh
