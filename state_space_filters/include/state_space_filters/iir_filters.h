@@ -5,6 +5,7 @@
 #include <memory>
 #include <Eigen/Core>
 #include <ros/node_handle.h>
+#include <state_space_systems/symbols.h>
 #include <state_space_systems/discrete_state_space_systems.h>
 
 namespace eigen_control_toolbox
@@ -32,7 +33,7 @@ protected:
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  using Symbols = DiscreteStateSpaceSymbols<N,N,N,MaxN,MaxN,MaxN>;
+  using Symbols = StateSpaceSymbols<N,N,N,MaxN,MaxN,MaxN>;
   using Input   = typename Symbols::Input;
   using Output  = typename Symbols::Output;
 
@@ -63,7 +64,7 @@ public:
     return DiscreteStateSpace<N,N,N,MaxN,MaxN,MaxN>::setStateFromLastIO(inputs,outputs);
   }
   
-  virtual bool setStateFromLastInput(const Input& inputs, const Output& outputs);
+  virtual bool setStateFromLastInput(const Input& inputs);
 };
 
 //!
@@ -91,6 +92,10 @@ protected:
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+  using Symbols = StateSpaceSymbols<N,N,N,MaxN,MaxN,MaxN>;
+  using Input   = typename Symbols::Input;
+  using Output  = typename Symbols::Output;
+
   FirstOrderHighPass();
   ~FirstOrderHighPass() = default;
   
@@ -102,6 +107,14 @@ public:
   virtual bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name);
 
   double getNaturalFrequency(){return m_natural_frequency;};
+
+  [[deprecated("setStateFromLastIO: since it is a filter, you should call setStateFromLastInput()")]]
+  virtual bool setStateFromLastIO(const Input& inputs, const Output& outputs) final 
+  {
+    return DiscreteStateSpace<N,N,N,MaxN,MaxN,MaxN>::setStateFromLastIO(inputs,outputs);
+  }
+  
+  virtual bool setStateFromLastInput(const Input& inputs);
 }; 
 
 

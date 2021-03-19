@@ -163,19 +163,6 @@ inline bool DiscreteStateSpace<S,I,O,MS,MI,MO>::setStateFromLastIO(const Input& 
   eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", m_input, eu::rows(inputs), eu::cols(inputs));
   eu::checkInputDimAndThrowEx("setStateFromLastIO - Outputs", m_output, eu::rows(outputs), eu::cols(outputs));
 
-  std::cout << "m_state:" << m_state.rows() << "x" << m_state.cols() << std::endl;
-  std::cout << "m_C:" << m_C.rows() << "x" << m_C.cols() << std::endl;
-  std::cout << "m_D:" << m_D.rows() << "x" << m_D.cols() << std::endl;
-  std::cout << "inputs:" << inputs.rows() << "x" << inputs.cols() << std::endl;
-  std::cout << "outputs:" << outputs.rows() << "x" << outputs.cols() << std::endl;
-
-  std::cout << "m_state:" << m_state << std::endl;
-  std::cout << "m_C:" << m_C << std::endl;
-  std::cout << "m_D:" << m_D << std::endl;
-  std::cout << "inputs:" << inputs << std::endl;
-  std::cout << "outputs:" << outputs << std::endl;
-
-
   if(!eu::solve(m_state, m_C, outputs - m_D * inputs ) )
   {
     std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Pseudo inv failed." << std::endl;

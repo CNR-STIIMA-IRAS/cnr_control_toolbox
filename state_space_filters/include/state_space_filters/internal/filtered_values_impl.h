@@ -83,7 +83,7 @@ bool FilteredValue<N,MaxN>::activateFilter( const FilteredValue<N,MaxN>::Value& 
   filter_active_ = true;
 
   lpf_.init( natural_frequency_,sampling_time_, eigen_utils::rows(init_value) );
-  lpf_.setStateFromLastIO(init_value, init_value);
+  lpf_.setStateFromLastInput(init_value);
 
   return true;
 }

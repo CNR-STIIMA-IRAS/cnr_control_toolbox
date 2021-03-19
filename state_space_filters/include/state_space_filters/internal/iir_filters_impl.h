@@ -244,6 +244,17 @@ inline bool FirstOrderLowPass<N,MaxN>::importMatricesFromParam(const ros::NodeHa
 }
 
 
+template<int N, int MaxN>
+inline bool FirstOrderLowPass<N,MaxN>::setStateFromLastInput(const typename FirstOrderLowPass<N,MaxN>::Input& input)
+{
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", this->m_input, eu::rows(input), eu::cols(input));
+  
+  this->m_state = input;
+  this->m_input = input;
+  this->m_output = input;
+  return true;
+}
+
 
 
 //========================================================
@@ -370,11 +381,11 @@ inline bool FirstOrderHighPass<N,MaxN>::importMatricesFromParam(const ros::NodeH
 template<int N, int MaxN>
 inline bool FirstOrderHighPass<N,MaxN>::setStateFromLastInput(const typename FirstOrderHighPass<N,MaxN>::Input& input)
 {
-  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", m_input, eu::rows(input), eu::cols(input));
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", this->m_input, eu::rows(input), eu::cols(input));
   
-  m_state = input;
-  m_input = input;
-  m_output = input;
+  this->m_state = input;
+  this->m_input = input;
+  this->m_output = input;
   return true;
 }
 
