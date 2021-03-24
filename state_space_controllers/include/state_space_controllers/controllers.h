@@ -41,6 +41,7 @@ public:
 
   bool setPI(const MatrixN& Kp,const MatrixN& Ki, const double& sampling_period, std::string& what);
 
+  bool setStateFromLastIO(const Value& inputs, const Value& outputs);
   void antiwindup(const Value& saturated_output, const Value& unsaturated_output);
 
 protected:

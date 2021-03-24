@@ -286,7 +286,7 @@ inline bool setMatricesFromParam(IntegralDiscreteStateSpace<K,N,MK,MN>& out,
 //!
 template<int N, int MN>
 inline bool setMatricesFromParam(Controller<N,MN>& out,
-    const ros::NodeHandle& nh,const std::string& name,std::string& what, int default_state_dimension)
+    const ros::NodeHandle& nh,const std::string& name,std::string& what)
 {
   bool ret = true;
   try
@@ -378,13 +378,21 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
         {
           return false;
         }
-        kp.push_back(kp_);
+        kp.resize(n,kp_);
       }
       if(static_cast<int>(kp.size())!=n)
       {
-        what += " The param dimension of the 'proportional_gain' " + std::to_string(kp.size())
-                  + " mismatches with the foreseen dimension" + std::to_string(n);
-        return false;
+        if(static_cast<int>(kp.size())==1)
+        {
+          double kp_ = kp.front();
+          kp.resize(n,kp_);
+        }
+        else
+        {
+          what += "The param dimension of the 'proportional_gain' " + std::to_string(kp.size())
+                    + " mismatches with the foreseen dimension" + std::to_string(n);
+          return false;
+        }
       }
       eu::setDiagonal(Kp,kp);
 
@@ -397,7 +405,7 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
           {
             return false;
           }
-          ki.push_back(ki_);
+          ki.resize(n,ki_);
         }
         if(!ru::getParam(nh, name+"/sample_period", sample_period, what))
         {
@@ -405,9 +413,17 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
         }
         if(static_cast<int>(ki.size())!=n)
         {
-          what += " The param dimension of the 'integral_gain' " + std::to_string(ki.size())
-                    + " mismatches with the foreseen dimension" + std::to_string(n);
-          return false;
+          if(static_cast<int>(ki.size())==1)
+          {
+            double ki_ = ki.front();
+            ki.resize(n,ki_);
+          }
+          else
+          {
+            what += "The param dimension of the 'integral_gain' " + std::to_string(ki.size())
+                      + " mismatches with the foreseen dimension" + std::to_string(n);
+            return false;
+          }
         }
         eu::setDiagonal(Ki,ki);
       }

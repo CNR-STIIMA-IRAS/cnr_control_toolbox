@@ -73,7 +73,30 @@ inline void Controller<N,MN>::antiwindup(const Controller<N,MN>::Value& saturate
   this->m_state+=this->m_Baw * m_aw;
 }
 
+template<int N, int MN>
+inline bool Controller<N,MN>::setStateFromLastIO(const Controller<N,MN>::Value& inputs,
+                                                 const Controller<N,MN>::Value& outputs)
+{
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Inputs", this->m_input, eu::rows(inputs), eu::cols(inputs));
+  eu::checkInputDimAndThrowEx("setStateFromLastIO - Outputs", this->m_output, eu::rows(outputs), eu::cols(outputs));
 
+  if(eu::norm(this->m_C)>0.0)
+  {
+    if(!eu::solve(this->m_state, this->m_C, outputs - this->m_D * inputs ) )
+    {
+      std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ": Pseudo inv failed." << std::endl;
+      return false;
+    }
+  }
+  else
+  {
+    eu::setZero(this->m_state);
+  }
+
+  this->m_input = inputs;
+  this->m_output = outputs;
+  return true;
+}
 
 template<int N, int MN>
 inline bool Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
@@ -107,7 +130,6 @@ inline bool Controller<N,MN>::setPI(const Controller<N,MN>::MatrixN &Kp,
   {
     return false;
   }
-
 
   args.D = Kp;
   if(eu::norm(Ki)==0.0)
