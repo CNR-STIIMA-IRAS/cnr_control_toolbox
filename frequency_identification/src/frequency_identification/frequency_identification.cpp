@@ -117,7 +117,7 @@ bool MultiSineEstimator::loadParam()
   }
 
 
-  if(!m_nh.getParam("warmup_time", m_rampup_time))
+  if(!m_nh.getParam("rampup_time", m_rampup_time))
   {
     CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"/warmup_time' does not exist");
   }
@@ -228,6 +228,7 @@ state MultiSineEstimator::execute(const double& dt, const double& y, double& x, 
   else if (m_state==state::Complete)
   {
     m_state=state::Idle;
+    saveFreqResp();
   }
 
   // states

@@ -37,7 +37,6 @@ int main(int argc, char **argv)
     t+=dt;
     if (state==identification::state::Idle)
     {
-      mse.saveFreqResp();
       mse.initTest(dt);
       t=0.0;
     }
