@@ -45,6 +45,8 @@ class MultiSineEstimator
 public:
   MultiSineEstimator(const ros::NodeHandle& nh,
                      const cnr_logger::TraceLoggerPtr& logger=NULL);
+
+  ~MultiSineEstimator();
   bool loadParam();
   state execute(const double& dt, const double &y, double& x, double& dx, double& ddx);
   void initTest(const double &dt);

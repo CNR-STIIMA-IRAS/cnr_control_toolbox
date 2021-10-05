@@ -54,6 +54,12 @@ MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
     throw std::invalid_argument("unable to initialize multisine estimator");
 }
 
+MultiSineEstimator::~MultiSineEstimator()
+{
+  if (m_gen_thread.joinable())
+    m_gen_thread.join();
+}
+
 bool MultiSineEstimator::loadParam()
 {
 
