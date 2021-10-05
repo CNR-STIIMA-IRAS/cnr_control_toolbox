@@ -68,9 +68,9 @@ bool MultiSineEstimator::loadParam()
   }
   m_test_time=m_carrier_periods*2.0*M_PI/m_carrier_frequency;
 
-  if(!m_nh.getParam("warmup_time", m_warmup_time))
+  if(!m_nh.getParam("rampup_time", m_rampup_time))
   {
-    CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"/warmup_time' does not exist");
+    CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"/rampup_time' does not exist");
   }
 
   double min_angular_frequency;
@@ -108,7 +108,7 @@ bool MultiSineEstimator::loadParam()
   }
 
 
-  if(!m_nh.getParam("warmup_time", m_warmup_time))
+  if(!m_nh.getParam("warmup_time", m_rampup_time))
   {
     CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"/warmup_time' does not exist");
   }
@@ -132,18 +132,18 @@ void MultiSineEstimator::getCommand(const double& t, double& x, double& dx, doub
   }
 
   double ratio=1.0;
-  if (t<m_warmup_time)
+  if (t<m_rampup_time)
   {
-    double tmp=t/m_warmup_time;
+    double tmp=t/m_rampup_time;
     ratio=3*std::pow(tmp,2.0)-2*std::pow(tmp,3.0);
   }
-  else if (t>(m_carrier_periods*m_carrier_period+2.0*m_warmup_time))
+  else if (t>(m_carrier_periods*m_carrier_period+2.0*m_rampup_time))
   {
     ratio=0.0;
   }
-  else if (t>(m_carrier_periods*m_carrier_period+m_warmup_time))
+  else if (t>(m_carrier_periods*m_carrier_period+m_rampup_time))
   {
-    double tmp=((m_carrier_periods*m_carrier_period+2*m_warmup_time)-t)/m_warmup_time;
+    double tmp=((m_carrier_periods*m_carrier_period+2*m_rampup_time)-t)/m_rampup_time;
     ratio=3*std::pow(tmp,2.0)-2*std::pow(tmp,3.0);
   }
 
@@ -187,7 +187,7 @@ void MultiSineEstimator::generatingSignalThread(const double &dt)
 
 void MultiSineEstimator::setOutput(const double& y, const double& t, const double& dt)
 {
-  if ( (t>m_warmup_time) && (t<(m_warmup_time+m_carrier_periods*m_carrier_period)) )
+  if ( (t>m_rampup_time) && (t<(m_rampup_time+m_carrier_periods*m_carrier_period)) )
   {
     std::complex<double> i(0.0,1.0);
     for (const std::pair<double,std::complex<double>>& p: m_spetrum_command)
@@ -201,7 +201,7 @@ void MultiSineEstimator::setOutput(const double& y, const double& t, const doubl
 
 double MultiSineEstimator::getExperimentTime() const
 {
-  return (m_carrier_periods*m_carrier_period+2.0*m_warmup_time);
+  return (m_carrier_periods*m_carrier_period+2.0*m_rampup_time);
 }
 
 void MultiSineEstimator::printFreqResp() const

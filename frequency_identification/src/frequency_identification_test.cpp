@@ -14,8 +14,6 @@ int main(int argc, char **argv)
 
   identification::MultiSineEstimator mse(pnh);
 
-  double exp_time=mse.getExperimentTime();
-
   double dt=0.001;
   ros::Rate lp(1.0/dt);
   double t=0.0;

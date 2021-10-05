@@ -61,7 +61,7 @@ protected:
   double m_carrier_amplitude;
   double m_carrier_periods;
   double m_test_time;
-  double m_warmup_time=5.0;
+  double m_rampup_time=5.0;
   double m_time=0.0;
 
   double m_max_pos;
