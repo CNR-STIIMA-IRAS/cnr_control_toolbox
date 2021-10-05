@@ -27,3 +27,65 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
+#include <ros/ros.h>
+#include <Eigen/Dense>
+#include <cnr_logger/cnr_logger.h>
+#include <complex>
+#include <thread>
+#include <mutex>
+#include <random>
+
+
+
+namespace  identification
+{
+enum state {Idle, GeneratingInput, Running, Complete} ;
+class MultiSineEstimator
+{
+public:
+  MultiSineEstimator(const ros::NodeHandle& nh);
+  bool loadParam();
+  state execute(const double& dt, const double &y, double& x, double& dx, double& ddx);
+  void initTest(const double &dt);
+
+  void printFreqResp() const;
+  double getExperimentTime() const;
+  state getState();
+  void saveFreqResp();
+protected:
+  ros::NodeHandle m_nh;
+  std::mt19937 m_rng;
+  std::normal_distribution<double> m_gen;
+  double m_carrier_frequency;
+  double m_carrier_period;
+  double m_carrier_amplitude;
+  double m_carrier_periods;
+  double m_test_time;
+  double m_warmup_time=5.0;
+  double m_time=0.0;
+
+  double m_max_pos;
+  double m_max_vel;
+  double m_max_acc;
+  int    m_min_harmonic;
+  int    m_max_harmonic;
+  int    m_harmonics_number;
+  state m_state;
+
+  std::thread m_gen_thread;
+
+  std::map<double,std::complex<double>> m_spetrum_command;
+  std::map<double,std::complex<double>> m_spetrum_output;
+  Eigen::VectorXcd m_freq_resp;
+  Eigen::VectorXd m_omega;
+  cnr_logger::TraceLogger m_logger;
+
+  void generateCommandSignal(const double &dt);
+  void computeFreqResp();
+  std::complex<double> computeFourierCoefficient(const double& freq);
+  void getCommand(const double& t, double& x, double& dx, double& ddx);
+  void setOutput(const double& y, const double &t, const double &dt);
+
+  void generatingSignalThread(const double &dt);
+};
+}  // end namespace identification

@@ -9,14 +9,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(catkin REQUIRED COMPONENTS
+  cnr_logger
   eigen_state_space_systems
   roscpp
+  sensor_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES frequency_identification
-  CATKIN_DEPENDS state_space_ros roscpp
+  CATKIN_DEPENDS cnr_logger state_space_ros roscpp sensor_msgs
   DEPENDS
 )
 
@@ -30,9 +32,10 @@ add_library(${PROJECT_NAME}
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(${PROJECT_NAME}_node src/frequency_identification_test.cpp)
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_node
+add_executable(${PROJECT_NAME}_test src/frequency_identification_test.cpp)
+add_dependencies(${PROJECT_NAME}_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_test
+ ${PROJECT_NAME}
  ${catkin_LIBRARIES}
 )
 
@@ -41,7 +44,7 @@ target_link_libraries(${PROJECT_NAME}_node
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-install(TARGETS ${PROJECT_NAME}_node
+install(TARGETS ${PROJECT_NAME}_test
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(TARGETS ${PROJECT_NAME}
