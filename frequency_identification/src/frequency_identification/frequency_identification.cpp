@@ -32,14 +32,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace  identification
 {
 
-MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh):
+MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
+                                       const cnr_logger::TraceLoggerPtr& logger):
   m_nh(nh)
 {
-  std::string path=m_nh.getNamespace();
-  std::string logger_id;
-  if(!m_nh.getParam("file_name", logger_id))
-    logger_id="multisize_estimation";
-  m_logger.init(logger_id,path);
+  if (logger)
+  {
+    m_logger=logger;
+  }
+  else
+  {
+    std::string path=m_nh.getNamespace();
+    std::string logger_id;
+    if(!m_nh.getParam("file_name", logger_id))
+      logger_id="multisize_estimation";
+    m_logger=std::make_shared<cnr_logger::TraceLogger>();
+    m_logger->init(logger_id,path);
+  }
 
   if (not loadParam())
     throw std::invalid_argument("unable to initialize multisine estimator");

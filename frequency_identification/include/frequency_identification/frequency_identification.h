@@ -43,7 +43,8 @@ enum state {Idle, GeneratingInput, Running, Complete} ;
 class MultiSineEstimator
 {
 public:
-  MultiSineEstimator(const ros::NodeHandle& nh);
+  MultiSineEstimator(const ros::NodeHandle& nh,
+                     const cnr_logger::TraceLoggerPtr& logger=NULL);
   bool loadParam();
   state execute(const double& dt, const double &y, double& x, double& dx, double& ddx);
   void initTest(const double &dt);
@@ -78,7 +79,7 @@ protected:
   std::map<double,std::complex<double>> m_spetrum_output;
   Eigen::VectorXcd m_freq_resp;
   Eigen::VectorXd m_omega;
-  cnr_logger::TraceLogger m_logger;
+  cnr_logger::TraceLoggerPtr m_logger;
 
   void generateCommandSignal(const double &dt);
   void computeFreqResp();
@@ -88,4 +89,6 @@ protected:
 
   void generatingSignalThread(const double &dt);
 };
+
+typedef std::shared_ptr<MultiSineEstimator> MultiSineEstimatorPtr;
 }  // end namespace identification
