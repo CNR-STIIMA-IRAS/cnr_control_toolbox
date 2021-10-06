@@ -34,7 +34,8 @@ namespace  identification
 
 MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
                                        const cnr_logger::TraceLoggerPtr& logger):
-  m_nh(nh)
+  m_nh(nh),
+  m_rng(m_rd())
 {
   if (logger)
   {
@@ -45,10 +46,43 @@ MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
     std::string path=m_nh.getNamespace();
     std::string logger_id;
     if(!m_nh.getParam("file_name", logger_id))
-      logger_id="multisize_estimation";
+      logger_id="multisine_estimation";
     m_logger=std::make_shared<cnr_logger::TraceLogger>();
     m_logger->init(logger_id,path);
   }
+
+  std::vector<double> fr_real;
+  std::vector<double> fr_imag;
+  std::vector<double> fr_omega;
+
+  if(!m_nh.getParam("frequency_response/angular_frequency", fr_omega))
+  {
+    fr_omega.clear();
+  }
+  if(!m_nh.getParam("frequency_response/real", fr_real))
+  {
+    fr_real.clear();
+  }
+  if(!m_nh.getParam("frequency_response/imag", fr_imag))
+  {
+    fr_imag.clear();
+  }
+  if (fr_omega.size()!=fr_real.size() || fr_omega.size() != fr_real.size() )
+  {
+    CNR_WARN(m_logger,"frequency_response sizes do not match");
+    fr_real.clear();
+    fr_imag.clear();
+    fr_omega.clear();
+  }
+
+  m_freq_resp.resize(fr_omega.size());
+  m_omega.resize(fr_omega.size());
+  for (size_t idx=0;idx<fr_omega.size();idx++)
+  {
+    m_omega(idx)=fr_omega.at(idx);
+    m_freq_resp(idx)=std::complex<double>(fr_real.at(idx),fr_imag.at(idx));
+  }
+
 
   if (not loadParam())
     throw std::invalid_argument("unable to initialize multisine estimator");

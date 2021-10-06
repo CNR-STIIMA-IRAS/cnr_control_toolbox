@@ -43,4 +43,6 @@ if __name__ == '__main__':
     ax2.set_xlabel("Angular frequency [rad/s]")
     ax2.set_ylabel("Phase [deg]")
     ax2.grid(axis="both",which="both")
-    plt.show(block = True)
+    plt.show(block = False)
+    plt.pause(0.01)
+    rospy.spin()

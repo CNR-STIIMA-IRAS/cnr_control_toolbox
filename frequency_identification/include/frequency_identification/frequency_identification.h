@@ -57,6 +57,7 @@ public:
   void saveFreqResp();
 protected:
   ros::NodeHandle m_nh;
+  std::random_device m_rd;
   std::mt19937 m_rng;
   std::normal_distribution<double> m_gen;
   double m_carrier_frequency;
