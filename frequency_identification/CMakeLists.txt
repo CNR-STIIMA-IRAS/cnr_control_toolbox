@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(catkin REQUIRED COMPONENTS
   cnr_logger
-  eigen_state_space_systems
+  state_space_systems
   roscpp
   sensor_msgs
 )
