@@ -3,7 +3,7 @@ project(state_space_ros)
 
 
 if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Release)
 endif()
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -78,11 +78,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(${PROJECT_NAME}_test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
-  install(TARGETS ${PROJECT_NAME}_test_filters
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
+
 
   add_rostest_gtest(${PROJECT_NAME}_test_state_space_matrix test/test_state_space_matrix.launch test/test_state_space_matrix.cpp)
   add_dependencies(${PROJECT_NAME}_test_state_space_matrix ${catkin_EXPORTED_TARGETS})
@@ -90,23 +86,12 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(${PROJECT_NAME}_test_state_space_matrix ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_test_state_space_matrix PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
-  install(TARGETS ${PROJECT_NAME}_test_state_space_matrix
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
-
+  
   add_rostest_gtest(${PROJECT_NAME}_test_controllers test/test_controllers.launch test/test_pid.cpp)
   add_dependencies(${PROJECT_NAME}_test_controllers ${catkin_EXPORTED_TARGETS})
   target_include_directories(${PROJECT_NAME}_test_controllers PUBLIC ${eigen_matrix_utils_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} include)
   target_link_libraries(${PROJECT_NAME}_test_controllers ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
-
-  install(TARGETS ${PROJECT_NAME}_test_controllers
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
 
   if(ENABLE_COVERAGE_TESTING)
     set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
