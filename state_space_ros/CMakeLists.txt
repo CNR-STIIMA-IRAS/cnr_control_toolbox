@@ -29,7 +29,6 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES state_space_ros
   CATKIN_DEPENDS state_space_systems state_space_controllers state_space_filters
 #  DEPENDS EIGEN3
 )
