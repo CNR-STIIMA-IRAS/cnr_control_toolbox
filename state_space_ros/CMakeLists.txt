@@ -61,6 +61,7 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   find_package(eigen_matrix_utils REQUIRED)
   find_package(Eigen3 REQUIRED)
+
   add_rostest_gtest(${PROJECT_NAME}_filtered_values_test test/test_filtered_values.launch test/test_filtered_values.cpp)
   target_include_directories(${PROJECT_NAME}_filtered_values_test PUBLIC ${eigen_matrix_utils_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} include)
   target_link_libraries(${PROJECT_NAME}_filtered_values_test ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
@@ -71,8 +72,6 @@ if(CATKIN_ENABLE_TESTING)
   target_include_directories(${PROJECT_NAME}_test_filters PUBLIC ${eigen_matrix_utils_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
   target_link_libraries(${PROJECT_NAME}_test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
-
-
 
   add_rostest_gtest(${PROJECT_NAME}_test_state_space_matrix test/test_state_space_matrix.launch test/test_state_space_matrix.cpp)
   add_dependencies(${PROJECT_NAME}_test_state_space_matrix ${catkin_EXPORTED_TARGETS})
