@@ -66,12 +66,6 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(${PROJECT_NAME}_filtered_values_test ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_filtered_values_test PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
-  install(TARGETS ${PROJECT_NAME}_filtered_values_test
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
-
   add_rostest_gtest(${PROJECT_NAME}_test_filters test/test_filters.launch test/test_filters.cpp)
   add_dependencies(${PROJECT_NAME}_test_filters ${catkin_EXPORTED_TARGETS})
   target_include_directories(${PROJECT_NAME}_test_filters PUBLIC ${eigen_matrix_utils_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
