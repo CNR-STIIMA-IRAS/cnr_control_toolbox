@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node pkg="frequency_identification"
+        type="frequency_identification_test"
+        name="frequency_identification_test" output="screen">
+
+    <rosparam command="load" file="$(find frequency_identification)/config/config.yaml" />
+
+  </node>
+
+</launch>
