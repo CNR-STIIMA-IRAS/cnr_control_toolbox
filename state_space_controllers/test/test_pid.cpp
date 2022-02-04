@@ -10,28 +10,62 @@
 //#include <state_space_systems/ros_params.h>
 
 using ControllerX = eigen_control_toolbox::Controller<-1>;
+using ControllerXStateSpaceArgs = eigen_control_toolbox::ControllerStateSpaceArgs<-1>;
 
-ros::NodeHandle* nh;
 
 // Declare a test
 TEST(TestSuite, ProportionalController)
 {
-  int ret=-1;
+  bool ret = false;
   std::string what;
   EXPECT_NO_FATAL_FAILURE(ControllerX proportional);
   ControllerX proportional;
-  
-  //EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(proportional,*nh,"/ctrl1", what) );
-  EXPECT_TRUE(ret>=0);
-  if (ret==0)
-  {
-    ROS_WARN("Failing initializing controller ctrl1: %s", what.c_str());
-  }
-  else if(ret==-1)
-  {
-    ROS_ERROR("Failing initializing controller ctrl1: %s", what.c_str());
-  }
+  ControllerXStateSpaceArgs a_ok, a_notok; 
+  /*
+  <rosparam>
+  ss:
+    A:
+    - [0, 1]
+    - [0, 0]
+    B:
+    - [0]
+    - [1]
+    C:
+    - [1, 0]
+    D:
+    - [0]
 
+  filter:
+    frequency: 5 # [Hz]
+    sampling_period: 0.01 # [s]
+
+
+  ctrl1: {type: "proportional", proportional_gain: 5.0}
+  ctrl2: {type: "PI", proportional_gain: 1, integral_gain: 1, sample_period: 8.0e-3}
+  </rosparam>
+  */
+
+  a_ok.A.resize(2,2);
+  a_ok.B.resize(2,1);
+  a_ok.C.resize(1,2);
+  a_ok.D.resize(1,1);
+  a_ok.A << 0, 1, 0, 0;
+  a_ok.B << 0, 1;
+  a_ok.C << 1, 0;
+  a_ok.D << 0;
+  EXPECT_TRUE( proportional.setMatrices(a_ok,what) );
+
+  a_notok.A.resize(3,3);
+  a_notok.B.resize(2,1);
+  a_notok.C.resize(1,2);
+  a_notok.D.resize(1,1);
+  a_notok.A << 0, 1, 0, 0,0,0;
+  a_notok.B << 0, 1;
+  a_notok.C << 1, 0;
+  a_notok.D << 0;
+
+  EXPECT_FALSE( proportional.setMatrices(a_notok,what) );
+  
   ROS_INFO("ctrl1:");
   EXPECT_NO_FATAL_FAILURE(std::cout << proportional << std::endl; );
 
@@ -60,16 +94,17 @@ TEST(TestSuite, ProportionalIntegralController)
   int ret=-1;
   std::string what;
   ControllerX pi;
-  //EXPECT_NO_FATAL_FAILURE(ret = eigen_control_toolbox::setMatricesFromParam<-1>(pi,*nh,"/ctrl2", what));
-  EXPECT_TRUE(ret>=0);
-  if (ret==0)
-  {
-    ROS_WARN("Failing initializing controller ctrl2: %s", what.c_str());
-  }
-  else if(ret==-1)
-  {
-    ROS_ERROR("Failing initializing controller ctrl2: %s", what.c_str());
-  }
+  Eigen::Matrix<double,2,2> Kp_ok; Kp_ok << 0,1,1,0;
+  Eigen::Matrix<double,2,2> Ki_ok; Ki_ok << 0,1,1,0;
+  Eigen::Matrix<double,3,3> Kp_notok; Kp_notok << 0,1,1,0,0,0;
+  Eigen::Matrix<double,2,2> Ki_notok; Ki_notok << 0,1,1,0;
+
+  double sampling_period = 0.001; 
+
+  EXPECT_TRUE( pi.setPI(Kp_ok, Ki_ok, sampling_period, what) );
+  EXPECT_FALSE( pi.setPI(Kp_notok, Ki_notok, sampling_period, what) );
+
+
 
   ROS_INFO("ctrl2:");
   EXPECT_NO_FATAL_FAILURE(std::cout << pi << std::endl; );
@@ -97,8 +132,7 @@ int main(int argc,char** argv)
 {
   // ------ Init ROS ------
   ros::init(argc,&*argv,"test_pid");
-  nh = new ros::NodeHandle();
-
+  
   srand((unsigned int) time(0));
 
   testing::InitGoogleTest(&argc, argv);
