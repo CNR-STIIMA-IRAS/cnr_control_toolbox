@@ -87,52 +87,28 @@ TEST(TestSuite, TestDiscreteStateSpaceXXX)
   
   DiscreteStateSpaceXXX dss;
   std::string what;
-  int ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/non_existent_namespace",what);
-  std::cerr << ret << std::endl;
-  EXPECT_TRUE(ret==-1);
+  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/non_existent_namespace",what));
   std::cout <<  what << std::endl;
 
-  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"dss",what);
-  EXPECT_TRUE(ret==-1);
+  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"dss",what));
   std::cout <<  what << std::endl;
 
-  ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss",what);
-  EXPECT_TRUE(ret>=0);
+  EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss",what));
   std::cout <<  what << std::endl;
 
   EXPECT_TRUE( 2 == dss.xDim() );
   EXPECT_TRUE( 3 == dss.uDim() );
   EXPECT_TRUE( 1 == dss.yDim() );
 
-  EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss2",what)>=0);
-  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
-
-  EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss3",what)>=0);
-  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
-
-  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss4_wrong",what)>=0);
-  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
-
-  EXPECT_FALSE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/dss5_wrong",what)>=0);
-  std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
+  std::vector<std::string> nss = {"/dss2", "/dss3", "/dss4", "/dss5"};
+  for(auto const & ns : nss)
+  {
+    std::cout << "===== " << ns << " ===== " << std::endl;
+    EXPECT_TRUE(eigen_control_toolbox::setMatricesFromParam(dss,*nh,ns,what));
+    std::cout << what << ( what.size()>0? "\n": ""); std::cout.flush();
+    std::cout << dss << std::endl;
+  }
 }
-
-
-//TEST(TestSuite, MatrixBasedFlterX)
-//{
-//  EXPECT_NO_FATAL_FAILURE( eigen_control_toolbox::DiscreteStateSpaceX lpf );
-
-//  eigen_control_toolbox::DiscreteStateSpaceX lpf;
-
-//  std::string msg;
-//  int ok = eigen_control_toolbox::setMatricesFromParam(lpf,*nh, "pos_filter",msg);
-//  EXPECT_TRUE(ok);
-//  std::cout << ok << std::endl;
-//  std::cout << msg << std::endl;
-//}
-
-
-
 
 
 int main(int argc,char** argv)
