@@ -10,3 +10,6 @@
 - git:
     local-name: cnr_control_toolbox
     uri: https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox
+- git:
+    local-name: cnr_logger
+    uri: https://github.com/CNR-STIIMA-IRAS/cnr_logger
