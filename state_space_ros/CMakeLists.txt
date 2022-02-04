@@ -78,7 +78,6 @@ if(CATKIN_ENABLE_TESTING)
   target_include_directories(${PROJECT_NAME}_test_state_space_matrix PUBLIC ${eigen_matrix_utils_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} include)
   target_link_libraries(${PROJECT_NAME}_test_state_space_matrix ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
   target_compile_options(${PROJECT_NAME}_test_state_space_matrix PUBLIC $<$<CONFIG:Release>:-Ofast >)
-
   
   add_rostest_gtest(${PROJECT_NAME}_test_controllers test/test_controllers.launch test/test_pid.cpp)
   add_dependencies(${PROJECT_NAME}_test_controllers ${catkin_EXPORTED_TARGETS})
