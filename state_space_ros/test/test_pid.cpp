@@ -132,13 +132,10 @@ TEST(TestSuite, ControllerSS)
   ControllerX ctrl_ss;
 
   EXPECT_TRUE(does_not_throw([&]{ret = ect::setMatricesFromParam<-1>(ctrl_ss,*nh,"/ss", what);}));
-  ROS_WARN_COND(ret==0, "Warning(s) raised while initializing the controller ss: %s", what.c_str());
-  ROS_ERROR_COND(ret==-1, "Error(s) raised while initializing controller ss: %s", what.c_str());
+  ROS_WARN_COND(ret, "Warning(s) raised while initializing the controller ss: %s", what.c_str());
 
   ROS_INFO("ctrl_ss:");
   EXPECT_TRUE(does_not_throw([&]{std::cout << ctrl_ss << std::endl;}));
-
-
   for (unsigned int idx=0;idx<200;idx++)
   {
     ControllerX::Input controller_input;

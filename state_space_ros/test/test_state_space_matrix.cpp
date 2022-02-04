@@ -88,6 +88,7 @@ TEST(TestSuite, TestDiscreteStateSpaceXXX)
   DiscreteStateSpaceXXX dss;
   std::string what;
   int ret = eigen_control_toolbox::setMatricesFromParam(dss,*nh,"/non_existent_namespace",what);
+  std::cerr << ret << std::endl;
   EXPECT_TRUE(ret==-1);
   std::cout <<  what << std::endl;
 

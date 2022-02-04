@@ -98,7 +98,7 @@ inline bool importMatricesFromParam(const ros::NodeHandle& nh,
     what = "The "+ nh.getNamespace()+"/"+ name+"/C has a numbers of cols that is different from D";
     return false;
   }
-  if(D.cols()!=B.rows())
+  if(D.cols()!=B.cols())
   {
     what = "The "+ nh.getNamespace()+"/"+ name+"/B has a numbers of cols that is different from D";
     return false;
