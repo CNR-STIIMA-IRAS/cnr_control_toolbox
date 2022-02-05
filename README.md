@@ -5,8 +5,8 @@
 [![Codacy Badge][c]][3]
 [![FOSSA Status][d]][4]
 
-[a]:https://travis-ci.org/CNR-STIIMA-IRAS/cnr_control_toolbox.svg?branch=master
-[1]:https://travis-ci.org/CNR-STIIMA-IRAS/cnr_control_toolbox
+[a]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml/badge.svg
+[1]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml
 
 [b]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox/branch/nicola/graph/badge.svg
 [2]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox
