@@ -185,7 +185,7 @@ TEST(TestSuite, FilteredVectorXd)
   EXPECT_NO_FATAL_FAILURE( fv.deactivateFilter(  ) );
   EXPECT_NO_FATAL_FAILURE( fv.value() = d );
   EXPECT_NO_FATAL_FAILURE( fv.update(d) );
-  EXPECT_ANY_THROW( d = fv.getUpdatedValue( ) );
+  EXPECT_NO_FATAL_FAILURE( d = fv.getUpdatedValue( ) );
   EXPECT_TRUE( fv.value().norm() == d.norm() );
   // ======================
   
@@ -261,7 +261,7 @@ TEST(TestSuite, FilteredVector2d)
   EXPECT_NO_FATAL_FAILURE( fv2.deactivateFilter(  ) );
   EXPECT_NO_FATAL_FAILURE( fv2.value() = d );
   EXPECT_NO_FATAL_FAILURE( fv2.update(d) );
-  EXPECT_ANY_THROW( d = fv2.getUpdatedValue( ) );
+  EXPECT_NO_FATAL_FAILURE( d = fv2.getUpdatedValue( ) );
   EXPECT_TRUE( fv2.value().norm() == d.norm() );
   // ======================
   
