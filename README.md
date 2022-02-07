@@ -5,14 +5,11 @@
 [![Codacy Badge][c]][3]
 [![FOSSA Status][d]][4]
 
-
-
-
 ## Aim ##
 
 state_space_systems is an Eigen implementation of a discrete state space linear system, including special case like: low- and high-pass first-order filters.
 
-## DiscreteStateSpace is generic discrete state space linear system. 
+## DiscreteStateSpace is generic discrete state space linear system ##
 
 ```c+++
 x state
@@ -28,7 +25,6 @@ x(k+1)=A*x(k)+B*u(k)
 ## Package Oroganization ##
 
 ## Classes Available ##
-
 
 # Discrete State Space Systems #
 
@@ -197,4 +193,3 @@ _All rights reserved._
 
 [d]:https://app.fossa.com/api/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox.svg?type=shield
 [4]:https://app.fossa.com/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox?ref=badge_shield
-
