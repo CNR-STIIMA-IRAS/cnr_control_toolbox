@@ -9,6 +9,10 @@
 
 state_space_systems is an Eigen implementation of a discrete state space linear system, including special case like: low- and high-pass first-order filters.
 
+## Package Organization ##
+
+## Classes Available ##
+
 ## DiscreteStateSpace is generic discrete state space linear system ##
 
 ```c+++
@@ -21,18 +25,11 @@ k actual step
 y(k)=C*x(k)+D*u(k)
 x(k+1)=A*x(k)+B*u(k)
 ```
+### USAGE ###
 
-## Package Oroganization ##
-
-## Classes Available ##
-
-# Discrete State Space Systems #
-
-## USAGE ##
-
-### Basic Usage ###
+#### Basic Usage ####
 ```c+++
-#include <state_space_systems/state_space_systems.h>
+#include <state_space_systems/discrete_state_space_systems.h>
 ```
 
 ```c++
@@ -68,10 +65,10 @@ x(k+1)=A*x(k)+B*u(k)
   y=ss.update(u); // computing one step, updating state and output
 ```
 
-### Loading the Matrices from Param ###
+#### Loading the Matrices from Param ####
 
 ```c+++
-#include <state_space_systems/state_space_systems.h>
+#include <state_space_systems/discrete_state_space_systems.h>
 ```
 
 ```c++
@@ -119,7 +116,7 @@ ss:
   - [0]  
 ```
 
-# FirstOrderLowPass and FirstOrderHighPass are low-pass and high-pass first-order filters #
+## FirstOrderLowPass and FirstOrderHighPass are low-pass and high-pass first-order filters ##
 
 ```cpp
 Low-pass filter: discretized version of 1/(tau*s+1)
@@ -127,7 +124,7 @@ High-pass filter: discretized version of tau*s/(tau*s+1)
 ```
 
 
-## Usage ##
+### Usage ###
 
 ```c+++
 #include <state_space_systems/eigen_common_filters.h>
