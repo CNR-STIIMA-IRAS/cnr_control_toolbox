@@ -170,7 +170,6 @@ _Software License Agreement (BSD License)_
 _Copyright (c) 2010, National Research Council of Italy, Institute of Intelligent Industrial Technologies and Systems for Advanced Manufacturing_    
 _All rights reserved._
 
-
 ## Contribution guidelines ##
 
 ### Contact ###
