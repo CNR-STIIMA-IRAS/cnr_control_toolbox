@@ -29,6 +29,7 @@ jobs:
     env:
       CCACHE_DIR: /github/home/.ccache # Directory for ccache (and how we enable ccache in industrial_ci)
       CODE_COVERAGE: codecov.io
+      CODECOV_TOKEN: 5bcaff30-b1df-4af2-a1a2-c2656ca76a07
       UPSTREAM_WORKSPACE: cnr_control_toolbox.rosinstall
       ROS_DISTRO: melodic
       ROS_REPO: main

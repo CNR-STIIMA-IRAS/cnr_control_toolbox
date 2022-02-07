@@ -1,4 +1,5 @@
----
+
+
 ignore:
   - "build"
   - "devel"
@@ -9,6 +10,7 @@ fixes:
   - "src/test/::"
 
 codecov:
+  token: 5bcaff30-b1df-4af2-a1a2-c2656ca76a07
   require_ci_to_pass: yes
 
 coverage:
