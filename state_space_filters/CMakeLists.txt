@@ -47,13 +47,16 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 ## Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  find_package(roscpp REQUIRED)
+
+  include_directories(${rostest_INCLUDE_DIRS} ${roscpp_INCLUDE_DIRS})
   add_rostest_gtest(filtered_values_test test/test_filtered_values.launch test/test_filtered_values.cpp)
-  target_link_libraries(filtered_values_test ${catkin_LIBRARIES} )
+  target_link_libraries(filtered_values_test ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
   target_compile_options(filtered_values_test PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
   add_rostest_gtest(test_filters test/test_filters.launch test/test_filters.cpp)
   add_dependencies(test_filters ${catkin_EXPORTED_TARGETS})
-  target_link_libraries(test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
+  target_link_libraries(test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
   target_compile_options(test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
   if(ENABLE_COVERAGE_TESTING)

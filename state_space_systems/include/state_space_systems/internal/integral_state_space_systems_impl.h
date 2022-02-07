@@ -3,7 +3,7 @@
 #ifndef   EIGEN_STATE_SPACE_SYSTEMS__INTEGRAL_STATE_SPACE_SYSTEMS_IMPL_H
 #define   EIGEN_STATE_SPACE_SYSTEMS__INTEGRAL_STATE_SPACE_SYSTEMS_IMPL_H
 
-#include <rosparam_utilities/rosparam_utilities.h>
+//#include <rosparam_utilities/rosparam_utilities.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <eigen_matrix_utils/overloads.h>
 

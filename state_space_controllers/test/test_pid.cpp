@@ -49,20 +49,22 @@ TEST(TestSuite, ProportionalController)
   a_ok.B.resize(2,1);
   a_ok.C.resize(1,2);
   a_ok.D.resize(1,1);
-  a_ok.A << 0, 1, 0, 0;
-  a_ok.B << 0, 1;
-  a_ok.C << 1, 0;
-  a_ok.D << 0;
+  std::cout << __LINE__ << std::endl; a_ok.A << 0, 1, 0, 0;
+  std::cout << __LINE__ << std::endl; a_ok.B << 0, 1;
+  std::cout << __LINE__ << std::endl; a_ok.C << 1, 0;
+  std::cout << __LINE__ << std::endl; a_ok.D << 0;
   EXPECT_TRUE( proportional.setMatrices(a_ok,what) );
 
   a_notok.A.resize(3,3);
   a_notok.B.resize(2,1);
   a_notok.C.resize(1,2);
   a_notok.D.resize(1,1);
-  a_notok.A << 0, 1, 0, 0,0,0;
-  a_notok.B << 0, 1;
-  a_notok.C << 1, 0;
-  a_notok.D << 0;
+  std::cout << __LINE__ << std::endl; a_notok.A << 0, 1, 0, 
+               0, 0, 0, 0, 0, 0;
+  std::cout << __LINE__ << std::endl; a_notok.B << 0, 
+               1;
+  std::cout << __LINE__ << std::endl; a_notok.C << 1, 0;
+  std::cout << __LINE__ << std::endl; a_notok.D << 0;
 
   EXPECT_FALSE( proportional.setMatrices(a_notok,what) );
   
@@ -96,15 +98,13 @@ TEST(TestSuite, ProportionalIntegralController)
   ControllerX pi;
   Eigen::Matrix<double,2,2> Kp_ok; Kp_ok << 0,1,1,0;
   Eigen::Matrix<double,2,2> Ki_ok; Ki_ok << 0,1,1,0;
-  Eigen::Matrix<double,3,3> Kp_notok; Kp_notok << 0,1,1,0,0,0;
+  Eigen::Matrix<double,3,3> Kp_notok; Kp_notok << 0,1,1,0,0,0,0,0,0;
   Eigen::Matrix<double,2,2> Ki_notok; Ki_notok << 0,1,1,0;
 
   double sampling_period = 0.001; 
 
   EXPECT_TRUE( pi.setPI(Kp_ok, Ki_ok, sampling_period, what) );
   EXPECT_FALSE( pi.setPI(Kp_notok, Ki_notok, sampling_period, what) );
-
-
 
   ROS_INFO("ctrl2:");
   EXPECT_NO_FATAL_FAILURE(std::cout << pi << std::endl; );

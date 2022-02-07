@@ -3,6 +3,7 @@
 #ifndef STATE_SPACE_ROS__ROS_PARAMS_IMPL_H
 #define STATE_SPACE_ROS__ROS_PARAMS_IMPL_H
 
+#include <rosparam_utilities/rosparam_utilities.h>
 #include <eigen_matrix_utils/overloads.h>
 #include <state_space_ros/ros_params.h>
 

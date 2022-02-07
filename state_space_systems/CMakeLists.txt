@@ -52,11 +52,13 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ## Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  find_package(roscpp REQUIRED)
   
+  include_directories(${rostest_INCLUDE_DIRS} ${roscpp_INCLUDE_DIRS})
   add_rostest_gtest(test_state_space_matrix test/test_state_space_matrix.launch test/test_state_space_matrix.cpp)
   add_dependencies(test_state_space_matrix ${catkin_EXPORTED_TARGETS})
   
-  target_link_libraries(test_state_space_matrix ${catkin_LIBRARIES} ${rostest_LIBRARIES} )
+  target_link_libraries(test_state_space_matrix ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
   target_compile_options(test_state_space_matrix PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
   if(ENABLE_COVERAGE_TESTING)

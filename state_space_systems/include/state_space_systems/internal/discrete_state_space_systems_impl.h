@@ -3,7 +3,7 @@
 #ifndef   state_space_systems_discrete_state_space_systems_impl_h
 #define   state_space_systems_discrete_state_space_systems_impl_h
 
-#include <rosparam_utilities/rosparam_utilities.h>
+//#include <rosparam_utilities/rosparam_utilities.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <eigen_matrix_utils/overloads.h>
 
@@ -57,6 +57,22 @@ inline bool DiscreteStateSpace<S, I, O, MS, MI, MO>::setMatrices(const BaseState
     const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>& _args
         = dynamic_cast<const DiscreteStateSpaceArgs<S,I,O,MS,MI,MO>&>(args);
 
+    // Check input coherence 
+    if((S==Eigen::Dynamic)||(I==Eigen::Dynamic)||(O==Eigen::Dynamic))
+    {
+      size_t _xDim = eu::rows(_args.A);
+      size_t _uDim = eu::cols(_args.B);
+      size_t _yDim = eu::rows(_args.C);               
+      if(!eu::checkInputDim("Matrix A", _args.A, _xDim, _xDim, msg) 
+      || !eu::checkInputDim("Matrix B", _args.B, _xDim, _uDim, msg)
+      || !eu::checkInputDim("Matrix C", _args.C, _yDim, _xDim, msg)
+      || !eu::checkInputDim("Matrix D", _args.D, _yDim, _uDim, msg))
+      {
+        msg="Preliminary Check: inputs mismatch"+msg;
+        return false; 
+      }
+    }
+    
     if(S==Eigen::Dynamic)
     {
       eu::resize(m_state, eu::rows(_args.A), 1);
