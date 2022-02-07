@@ -5,18 +5,6 @@
 [![Codacy Badge][c]][3]
 [![FOSSA Status][d]][4]
 
-[a]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml/badge.svg
-[1]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml
-
-[b]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox/branch/nicola/graph/badge.svg
-[2]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox
-
-[c]:https://api.codacy.com/project/badge/Grade/7f1834c02aa84b959ee9b7529deb48d6
-[3]:https://app.codacy.com/gh/CNR-STIIMA-IRAS/cnr_control_toolbox?utm_source=github.com&utm_medium=referral&utm_content=CNR-STIIMA-IRAS/cnr_control_toolbox&utm_campaign=Badge_Grade_Dashboard
-
-[d]:https://app.fossa.com/api/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox.svg?type=shield
-[4]:https://app.fossa.com/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox?ref=badge_shield
-
 
 
 
@@ -198,5 +186,15 @@ _All rights reserved._
 <mailto:<mailto:manuel.beschi@stiima.cnr.it>>
 <mailto:<mailto:nicola.pedrocchi@stiima.cnr.it>>
 
-## License ##
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox?ref=badge_large)
+[a]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml/badge.svg
+[1]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml
+
+[b]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox/branch/nicola/graph/badge.svg
+[2]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox
+
+[c]:https://api.codacy.com/project/badge/Grade/7f1834c02aa84b959ee9b7529deb48d6
+[3]:https://app.codacy.com/gh/CNR-STIIMA-IRAS/cnr_control_toolbox?utm_source=github.com&utm_medium=referral&utm_content=CNR-STIIMA-IRAS/cnr_control_toolbox&utm_campaign=Badge_Grade_Dashboard
+
+[d]:https://app.fossa.com/api/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox.svg?type=shield
+[4]:https://app.fossa.com/projects/git%2Bgithub.com%2FCNR-STIIMA-IRAS%2Fcnr_control_toolbox?ref=badge_shield
+
