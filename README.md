@@ -123,8 +123,7 @@ Low-pass filter: discretized version of 1/(tau*s+1)
 High-pass filter: discretized version of tau*s/(tau*s+1)
 ```
 
-
-### Usage ###
+### Usage of the FirstOrderLowPass ###
 
 ```c+++
 #include <state_space_systems/eigen_common_filters.h>
