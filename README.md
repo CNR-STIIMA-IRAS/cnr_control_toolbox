@@ -1,6 +1,6 @@
 # CNR Control Toolbox #
 
-[![ROS INDUSTRIAL CI](a)](1)
+[![ROS INDUSTRIAL CI][a]][1]
 [![codecov][b]][2]
 [![Codacy Badge][c]][3]
 [![FOSSA Status][d]][4]
