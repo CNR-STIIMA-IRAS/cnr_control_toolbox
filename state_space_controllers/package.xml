@@ -39,6 +39,8 @@
   <exec_depend>eigen_matrix_utils</exec_depend>
   <exec_depend>state_space_systems</exec_depend>
 
+  <test_depend>curl</test_depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

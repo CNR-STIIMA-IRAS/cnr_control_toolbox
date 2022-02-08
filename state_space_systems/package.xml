@@ -27,6 +27,8 @@
   <exec_depend>eigen_matrix_utils</exec_depend>
   <exec_depend>rostest</exec_depend>
 
+  <test_depend>curl</test_depend>
+
   <export>
     <rosdoc config="rosdoc.yaml" />
   </export>
