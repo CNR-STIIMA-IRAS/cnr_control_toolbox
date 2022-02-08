@@ -180,7 +180,7 @@ _All rights reserved._
 [a]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml/badge.svg
 [1]:https://github.com/CNR-STIIMA-IRAS/cnr_control_toolbox/actions/workflows/industrial_ci_action.yml
 
-[b]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox/branch/nicola/graph/badge.svg
+[b]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox/branch/master/graph/badge.svg?token=D29UN0QD0X
 [2]:https://codecov.io/gh/CNR-STIIMA-IRAS/cnr_control_toolbox
 
 [c]:https://api.codacy.com/project/badge/Grade/7f1834c02aa84b959ee9b7529deb48d6
