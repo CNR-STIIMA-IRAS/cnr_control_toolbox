@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils)
+find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils rosparam_utilities)
 find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
 
 ## Add gtest based cpp test target and link libraries
@@ -21,7 +21,7 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
-  CATKIN_DEPENDS eigen_matrix_utils
+  CATKIN_DEPENDS eigen_matrix_utils rosparam_utilities
   DEPENDS
 )
 
@@ -53,11 +53,11 @@ install(DIRECTORY include/${PROJECT_NAME}/
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   find_package(roscpp REQUIRED)
-  
+
   include_directories(${rostest_INCLUDE_DIRS} ${roscpp_INCLUDE_DIRS})
   add_rostest_gtest(test_state_space_matrix test/test_state_space_matrix.launch test/test_state_space_matrix.cpp)
   add_dependencies(test_state_space_matrix ${catkin_EXPORTED_TARGETS})
-  
+
   target_link_libraries(test_state_space_matrix ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
   target_compile_options(test_state_space_matrix PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
@@ -69,4 +69,3 @@ if(CATKIN_ENABLE_TESTING)
     )
   endif()
 endif()
-
