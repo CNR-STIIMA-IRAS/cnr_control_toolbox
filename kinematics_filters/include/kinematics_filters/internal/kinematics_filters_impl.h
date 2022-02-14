@@ -16,9 +16,9 @@ using MatD = Eigen::Matrix<double,
 
 // ==================================================================================
 template<typename D1, typename D2, typename D3, typename D4, typename D5>
-inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd_target,
-                            const Eigen::MatrixBase<D3>& q_actual,
-                              const Eigen::MatrixBase<D2>& qd_actual,
+inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd,
+                            const Eigen::MatrixBase<D3>& q_prev,
+                              const Eigen::MatrixBase<D2>& qd_prev,
                                 const Eigen::MatrixBase<D4>& q_max,
                                   const Eigen::MatrixBase<D5>& q_min,
                                     const Eigen::MatrixBase<D4>& qd_max,
@@ -28,62 +28,63 @@ inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd_target,
                                               const bool& preserve_direction,
                                                 std::stringstream* report)
 {
-  if( eigen_utils::size(qd_target) != eigen_utils::size(q_actual)
-  ||  eigen_utils::size(qd_target) != eigen_utils::size(q_max) 
-  ||  eigen_utils::size(qd_target) != eigen_utils::size(q_min))
+  if( eigen_utils::size(qd) != eigen_utils::size(q_prev)
+  ||  eigen_utils::size(qd) != eigen_utils::size(q_max) 
+  ||  eigen_utils::size(qd) != eigen_utils::size(q_min))
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "inputs dimension mismatch.").c_str());
   }
-  for(size_t i=0; i<eigen_utils::rows(qd_target);i++)
+  for(size_t i=0; i<eigen_utils::rows(qd);i++)
   {
     if(q_max(i)<=q_min(i))
-      throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max' is less than 'q_min'").c_str());
+      throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max="+
+        std::to_string(q_max(i))+"' is less than 'q_min="+std::to_string(q_min(i))+"'").c_str());
   }
-  bool saturated = saturateSpeedFirstOrderState(qd_target,
-                      qd_actual, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
+  bool saturated = saturateSpeedFirstOrderState(qd,
+                      qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
 
   if(report)
   {
-    *report << "[-----][BRK   SATURATION] INPUT  qd: " << eigen_utils::to_string(qd_target) << "\n";
+    *report << "[-----][BRK   SATURATION] INPUT  qd: " << eigen_utils::to_string(qd) << "\n";
   }
 
-  size_t nAx = eigen_utils::size(qd_target);
+  size_t nAx = eigen_utils::size(qd);
   MatD<D1> braking_distance, q_saturated_qd;
   eigen_utils::resize(braking_distance, nAx);
   eigen_utils::resize(q_saturated_qd  , nAx);
   for(size_t iAx=0; iAx<nAx;iAx++)
   {
     braking_distance(iAx)  = 0.5 * qdd_max(iAx)
-                             * std::pow(std::abs(qd_target(iAx))/qdd_max(iAx) , 2.0);
+                             * std::pow(std::abs(qd(iAx))/qdd_max(iAx) , 2.0);
   }
 
-  q_saturated_qd = q_actual + qd_actual* dt;
+  q_saturated_qd = q_prev + qd_prev* dt;
   for(size_t iAx=0; iAx<nAx;iAx++)
   {
-    if ((q_saturated_qd(iAx) > (q_max(iAx) - braking_distance(iAx))) && (qd_target(iAx)>0))
+    if ((q_saturated_qd(iAx) > (q_max(iAx) - braking_distance(iAx))) && (qd(iAx)>0))
     {
       saturated = true;
-      qd_target(iAx) = std::max(0.0, qd_target(iAx) - qdd_max(iAx) * dt);
+      qd(iAx) = std::max(0.0, qd(iAx) - qdd_max(iAx) * dt);
     }
-    else if((q_saturated_qd(iAx)<(q_min(iAx) + braking_distance(iAx))) && (qd_target(iAx)<0))
+    else if((q_saturated_qd(iAx)<(q_min(iAx) + braking_distance(iAx))) && (qd(iAx)<0))
     {
       saturated = true;
-      qd_target(iAx) = std::min(0.0, qd_target(iAx) + qdd_max(iAx) * dt);
+      qd(iAx) = std::min(0.0, qd(iAx) + qdd_max(iAx) * dt);
     }
   }
 
   if(report)
   {
     *report << (saturated ? "[TRUE ]": "[FALSE]" )
-            << "[BRK   SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd_target) << "\n";
+            << "[BRK   SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd) << "\n";
   }
   return saturated;
 }
 
 
-inline bool saturateSpeedFullState(double& qd_target,
-                            const double& q_actual,
-                              const double& qd_actual,
+inline bool saturateSpeedFullState(double& qd,
+                            const double& q_prev,
+                              const double& qd_prev,
                                 const double& q_max,
                                   const double& q_min, 
                                     const double& qd_max,
@@ -98,33 +99,33 @@ inline bool saturateSpeedFullState(double& qd_target,
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "The range is wrong. 'q_max' is less than 'q_min'").c_str());
   }
 
-  bool saturated = saturateSpeedFirstOrderState(qd_target,
-                      qd_actual, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
+  bool saturated = saturateSpeedFirstOrderState(qd,
+                      qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
 
   if(report)
   {
-    *report << "[-----][BRK   SATURATION] INPUT  qd: " << eigen_utils::to_string(qd_target) << "\n";
+    *report << "[-----][BRK   SATURATION] INPUT  qd: " << eigen_utils::to_string(qd) << "\n";
   }
   double braking_distance;
   braking_distance  = 0.5 * qdd_max
-                           * std::pow(std::abs(qd_target)/qdd_max, 2.0);
+                           * std::pow(std::abs(qd)/qdd_max, 2.0);
 
-  double q_saturated_qd = q_actual + qd_actual* dt;
-  if ((q_saturated_qd > (q_max - braking_distance)) && (qd_target>0))
+  double q_saturated_qd = q_prev + qd_prev* dt;
+  if ((q_saturated_qd > (q_max - braking_distance)) && (qd>0))
   {
     saturated = true;
-    qd_target = std::max(0.0, qd_target - qdd_max * dt);
+    qd = std::max(0.0, qd - qdd_max * dt);
   }
-  else if((q_saturated_qd<(q_min + braking_distance)) && (qd_target<0))
+  else if((q_saturated_qd<(q_min + braking_distance)) && (qd<0))
   {
     saturated = true;
-    qd_target = std::min(0.0, qd_target + qdd_max * dt);
+    qd = std::min(0.0, qd + qdd_max * dt);
   }
 
   if(report)
   {
     *report << (saturated ? "[TRUE ]": "[FALSE]" )
-            << "[BRK   SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd_target) << "\n";
+            << "[BRK   SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd) << "\n";
   }
   return saturated;
 
@@ -135,8 +136,8 @@ inline bool saturateSpeedFullState(double& qd_target,
 
 // ==================================================================================
 template<typename D1, typename D2, typename D3, typename D4>
-inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd_target,
-                            const Eigen::MatrixBase<D2>& qd_actual,
+inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd,
+                            const Eigen::MatrixBase<D2>& qd_prev,
                               const Eigen::MatrixBase<D3>& qd_max,
                                 const Eigen::MatrixBase<D4>& qdd_max,
                                     const double& dt,
@@ -144,42 +145,61 @@ inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd_target,
                                         const bool& preserve_direction,
                                           std::stringstream* report)
 {
-  if( eigen_utils::size(qd_target) != eigen_utils::size(qd_actual)
-  ||  eigen_utils::size(qd_target) != eigen_utils::size(qdd_max))
+  if( eigen_utils::size(qd) != eigen_utils::size(qd_prev)
+  ||  eigen_utils::size(qd) != eigen_utils::size(qdd_max))
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "inputs dimension mismatch.").c_str());
   }
-
-  bool saturated = saturateSpeed(qd_target, 
-                      qd_max, max_velocity_multiplier, preserve_direction, report);
-
+  if(qd_max.minCoeff() < 1e-6)
+  {
+    throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+      " at least one joint has a qd max of is less or equal to zero").c_str()); 
+  }
+  if(qdd_max.minCoeff() < 1e-6)
+  {
+    throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+      " at least one joint has a qdd max of is less or equal to zero").c_str());  
+  }
   if(report)
   {
-    *report<<"[-----][ACC   SATURATION] INPUT  qd: "<<eigen_utils::to_string(qd_target)
-              <<" qd actual: " << eigen_utils::to_string(qd_actual)<<"\n";
+    *report<<"[-----][ACC   SATURATION] INPUT  qd     : "<<eigen_utils::to_string(qd)<<"\n"
+              <<"[-----][ACC   SATURATION] INPUT  qd prev: " << eigen_utils::to_string(qd_prev)<<"\n"
+                <<"[-----][ACC   SATURATION] INPUT  qd  max: " << eigen_utils::to_string(qd_max * max_velocity_multiplier)
+                  <<" (multiplier: " << max_velocity_multiplier
+                    <<", preserve dir: " << preserve_direction<<")\n"
+                      <<"[-----][ACC   SATURATION] INPUT  qdd max: " << eigen_utils::to_string(qdd_max)<<"\n";
   }
-  size_t nAx = eigen_utils::rows(qd_target);
+
+  size_t nAx = eigen_utils::rows(qd);
 
   MatD<D1> qd_sup, qd_inf, dqd;
   eigen_utils::resize(qd_sup, nAx);
   eigen_utils::resize(qd_inf, nAx);
   eigen_utils::resize(dqd   , nAx);
 
-  qd_sup = qd_actual + qdd_max * dt;
-  qd_inf = qd_actual - qdd_max * dt;
+  qd_sup = qd_prev + qdd_max * dt;
+  qd_inf = qd_prev - qdd_max * dt;
   eigen_utils::setZero(dqd);
   for(size_t iAx=0;iAx<nAx;iAx++)
   {
-    dqd(iAx) = qd_target(iAx) > qd_sup(iAx) ? (qd_sup(iAx) - qd_target(iAx))
-             : qd_target(iAx) < qd_inf(iAx) ? (qd_inf(iAx) - qd_target(iAx))
+    dqd(iAx) = qd(iAx) > qd_sup(iAx) ? (qd_sup(iAx) - qd(iAx))
+             : qd(iAx) < qd_inf(iAx) ? (qd_inf(iAx) - qd(iAx))
              : 0.0;
   }
-  saturated |= dqd.cwiseAbs().maxCoeff()>1e-5;
+  
+  bool saturated = dqd.cwiseAbs().maxCoeff()>1e-5;
+  
+  if(report)
+  {
+    *report << "[-----][ACC   SATURATION] CALC   qd  sup: "  << eigen_utils::to_string(qd_sup) << "\n";
+    *report << "[-----][ACC   SATURATION] CALC   qd  inf: "  << eigen_utils::to_string(qd_inf) << "\n";
+    *report << "[-----][ACC   SATURATION] CALC   dqd    : "  << eigen_utils::to_string(dqd) << " => Saturated? " << (saturated ? "TRUE" : "FALSE") << "\n";
+  }
   if(saturated)
   {
     if(preserve_direction)
     {
-      Eigen::VectorXd dqd_dir = (qd_target - qd_actual).normalized();
+      Eigen::VectorXd dqd_dir = (qd - qd_prev).normalized();
       if(dqd.norm() < 1e-5)
       {
         dqd_dir.setZero();
@@ -187,17 +207,17 @@ inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd_target,
 
       if(dqd.minCoeff() * dqd.maxCoeff() >= 0.0)
       {
-        qd_target = qd_target + (dqd.dot(dqd_dir) * dqd_dir);
+        qd = qd + (dqd.dot(dqd_dir) * dqd_dir);
       }
       else
       {
-        *report << "[-----][ACC   SATURATION] Target vel     : " << eigen_utils::to_string(qd_target) << "\n";
-        *report << "[-----][ACC   SATURATION] Prev target vel: " << eigen_utils::to_string(qd_actual) << "\n";
-        *report << "[-----][ACC   SATURATION] qd_sup         : " << eigen_utils::to_string(qd_sup) << "\n";
-        *report << "[-----][ACC   SATURATION] qd_inf         : " << eigen_utils::to_string(qd_inf) << "\n";
-        *report << "[-----][ACC   SATURATION] Calc correction: " << eigen_utils::to_string(dqd) << "\n";
-        qd_target = qd_target + dqd;
+        *report << "[-----][ACC   SATURATION] !!!!!! IT IS IMPOSSILBE TO PRESERVE DIRECTION (min dqd: " << dqd.minCoeff() <<", max dqd: "<< dqd.maxCoeff()  << ")\n";
+        qd = qd + dqd;
       }
+    }
+    else
+    {
+      qd = qd + dqd;
     }
   }
   else
@@ -205,17 +225,32 @@ inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd_target,
     // do nothing
   }
 
+
+  double _max_velocity_multiplier = max_velocity_multiplier;
+  for(size_t iAx=0;iAx<eigen_utils::size(qd_max);iAx++)
+  {
+    _max_velocity_multiplier = std::fabs(qd_prev(iAx)) > qd_max(iAx) 
+                              ? std::max( _max_velocity_multiplier, 1.01 * std::fabs(qd_prev(iAx)) / qd_max(iAx) )
+                              : _max_velocity_multiplier;
+  }
+  if(report)
+  {
+    *report <<"[-----][ACC   SATURATION] CALC   qd mul : " << max_velocity_multiplier 
+              << " --> " << _max_velocity_multiplier <<"\n";
+  }
+
+  saturated |= saturateSpeed(qd, qd_max, max_velocity_multiplier, preserve_direction, report);
   if(report)
   {
     *report << (saturated ? "[TRUE ]": "[FALSE]" )
-            <<"[ACC   SATURATION] OUTPUT qd: "<<eigen_utils::to_string(qd_target)<< "\n";
+              <<"[ACC   SATURATION] OUTPUT qd     : "<<eigen_utils::to_string(qd)<< "\n";
   }
   return saturated;
 }
 
 
-inline bool saturateSpeedFirstOrderState(double& qd_target,
-                            const double& qd_actual,
+inline bool saturateSpeedFirstOrderState(double& qd,
+                            const double& qd_prev,
                               const double& qd_max, 
                                 const double& qdd_max,
                                   const double& dt,
@@ -223,35 +258,56 @@ inline bool saturateSpeedFirstOrderState(double& qd_target,
                                       const bool& preserve_direction, 
                                         std::stringstream* report)
 {
-  bool saturated = saturateSpeed(qd_target, qd_max, max_velocity_multiplier, preserve_direction, report);
-
+  if(qd_max < 1e-6)
+  {
+    throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+      " qd max less or equal to zero").c_str()); 
+  }
+  if(qdd_max < 1e-6)
+  {
+    throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+      " qdd max less or equal to zero").c_str()); 
+  }
   if(report)
   {
-    *report<<"[-----][ACC   SATURATION] INPUT  qd: "<<eigen_utils::to_string(qd_target)<<"\n";
+    *report<<"[-----][ACC   SATURATION] INPUT  qd     : "<<eigen_utils::to_string(qd)<<"\n"
+              <<"[-----][ACC   SATURATION] INPUT  qd prev: " << eigen_utils::to_string(qd_prev)<<"\n"
+                <<"[-----][ACC   SATURATION] INPUT  qd  max: " << eigen_utils::to_string(qd_max * max_velocity_multiplier)
+                  <<" (multiplier: " << max_velocity_multiplier
+                    <<", preserve dir: " << preserve_direction<<")\n"
+                      <<"[-----][ACC   SATURATION] INPUT  qdd max: " << eigen_utils::to_string(qdd_max)<<"\n";
   }
-  double qd_sup  = qd_actual + qdd_max * dt;
-  double qd_inf  = qd_actual - qdd_max * dt;
+  double qd_sup  = qd_prev + qdd_max * dt;
+  double qd_inf  = qd_prev - qdd_max * dt;
   double dqd = 0;
-  dqd  = qd_target > qd_sup ? (qd_sup - qd_target)
-       : qd_target < qd_inf ? (qd_inf + qd_target)
+  dqd  = qd > qd_sup ? (qd_sup - qd)
+       : qd < qd_inf ? (qd_inf - qd)
        : 0.0;
-  saturated |= std::fabs(dqd)>0.0;
+  bool saturated = std::fabs(dqd)>0.0;
 
   if(report)
   {
-    *report << "Target vel     : " << eigen_utils::to_string(qd_target) << "\n";
-    *report << "Prev target vel: " << eigen_utils::to_string(qd_actual) << "\n";
-    *report << "qd_sup         : " << eigen_utils::to_string(qd_sup) << "\n";
-    *report << "qd_inf         : " << eigen_utils::to_string(qd_inf) << "\n";
-    *report << "Calc correction: " << eigen_utils::to_string(dqd) << "\n";
+    *report << "[-----][ACC   SATURATION] CALC   qd  sup: "  << eigen_utils::to_string(qd_sup) << "\n";
+    *report << "[-----][ACC   SATURATION] CALC   qd  inf: "  << eigen_utils::to_string(qd_inf) << "\n";
   }
-  qd_target = qd_target + dqd;
+  qd = qd + dqd;
 
+  double _max_velocity_multiplier = std::fabs(qd_prev) > qd_max 
+                                  ? std::max( max_velocity_multiplier, 1.01 * std::fabs(qd_prev) / qd_max )
+                                  : max_velocity_multiplier;
+  if(report)
+  {
+    *report <<"[-----][ACC   SATURATION] CALC   qd mul: " << max_velocity_multiplier 
+              << " --> " << _max_velocity_multiplier <<"\n";
+  }
+
+  saturated |= saturateSpeed(qd, qd_max, _max_velocity_multiplier, preserve_direction, report);
   if(report)
   {
     *report << (saturated ? "[TRUE ]": "[FALSE]" )
-            <<"[ACC   SATURATION] OUTPUT qd: "<<eigen_utils::to_string(qd_target)<< "\n";
+              <<"[ACC   SATURATION] OUTPUT qd     : "<<eigen_utils::to_string(qd)<< "\n";
   }
+
   return saturated;
 }
 // ==================================================================================
@@ -262,76 +318,95 @@ inline bool saturateSpeedFirstOrderState(double& qd_target,
 
 // ==================================================================================
 template<typename D1, typename D2>
-inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd_target,
+inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
                             const Eigen::MatrixBase<D2>& qd_max,
                               const double& max_velocity_multiplier,
                                 const bool& preserve_direction,
                                   std::stringstream* report)
-{
-  if( eigen_utils::size(qd_target) != eigen_utils::size(qd_max) )
+{    
+  const auto _qd_max = qd_max * max_velocity_multiplier;
+  if(report)
+  {
+    *report << "[-----][SPEED SATURATION] INPUT  qd     : " << eigen_utils::to_string(qd) << "\n"
+              <<"[-----][SPEED SATURATION] INPUT  qd max : " << eigen_utils::to_string(_qd_max)
+                <<" (multiplier: " << max_velocity_multiplier
+                  <<", preserve dir: " << preserve_direction<<")\n";
+  }
+
+  if( eigen_utils::size(qd) != eigen_utils::size(qd_max) )
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "inputs dimension mismatch.").c_str());
   }
-  
-  if(report)
+  for(size_t iAx=0; iAx<eigen_utils::rows(qd_max);iAx++)
   {
-    *report << "[-----][SPEED SATURATION] INPUT  qd: " << eigen_utils::to_string(qd_target)
-              << " dq max : " << eigen_utils::to_string(qd_target)
-               <<" max multiplier: " << max_velocity_multiplier<<"\n";
+    if(eigen_utils::at(qd_max,iAx) < 1e-6)
+    {
+      throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+        " qd max of the ax " + std::to_string(iAx) +" less or equal to zero").c_str()); 
+    }
   }
 
-
-  size_t nAx = eigen_utils::rows(qd_target);
+  size_t nAx = eigen_utils::rows(qd);
 
   MatD<D1> scale;
   eigen_utils::resize(scale, nAx);
   
+
   for(size_t iAx=0;iAx<nAx;iAx++)
   {
-    scale(iAx) = std::fabs(qd_target(iAx)) > qd_max * max_velocity_multiplier
-               ? qd_max * max_velocity_multiplier/ std::fabs(qd_target(iAx) )
+    scale(iAx) = std::fabs(qd(iAx)) > _qd_max(iAx)
+               ? _qd_max(iAx)/ std::fabs(qd(iAx) )
                : 1.0;
   }
 
   if(preserve_direction)
   {
-    qd_target = scale.minCoeff() * qd_target;
+    qd = scale.minCoeff() * qd;
   }
   else
   {
-    qd_target = scale.asDiagonal() * qd_target;
+    qd = scale.asDiagonal() * qd;
   }
 
   if(report)
   {
     *report << (scale.minCoeff()<1 ? "[TRUE ]": "[FALSE]" )
-            << "[SPEED SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd_target) << "\n";
+            << "[SPEED SATURATION] OUTPUT qd     : " << eigen_utils::to_string(qd) << "\n";
   }
 
   return scale.minCoeff()<1;
 }
 
-inline bool saturateSpeed(double& qd_target, 
+inline bool saturateSpeed(double& qd, 
                             const double& qd_max, 
                               const double& max_velocity_multiplier,
-                                const bool& /*preserve_direction*/, 
+                                const bool& preserve_direction, 
                                   std::stringstream* report)
 {
+  const double _qd_max =  qd_max * max_velocity_multiplier;
   if(report)
   {
-    *report << "[-----][SPEED SATURATION] INPUT  qd: " << eigen_utils::to_string(qd_target)
-                  <<" max multiplier: " << max_velocity_multiplier<<"\n";
+    *report << "[-----][SPEED SATURATION] INPUT  qd     : " << eigen_utils::to_string(qd) << "\n"
+              <<"[-----][SPEED SATURATION] INPUT  qd max : " << eigen_utils::to_string(_qd_max)
+                <<" (multiplier: " << max_velocity_multiplier
+                  <<", preserve dir: " << preserve_direction<<")\n";
   }
-  double scale = std::fabs(qd_target) > qd_max * max_velocity_multiplier
-               ? qd_max * max_velocity_multiplier/ std::fabs(qd_target)
-               : 1.0;
+  if(qd_max < 1e-6)
+  {
+    throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") +
+      " qd max less or equal to zero").c_str()); 
+  }
 
-  qd_target = scale * qd_target;
+
+  double scale   = std::fabs(qd) > _qd_max ? _qd_max / std::fabs(qd)
+                 : 1.0;
+
+  qd = scale * qd;
 
   if(report)
   {
     *report << (scale<1 ? "[TRUE ]": "[FALSE]" )
-            << "[SPEED SATURATION] OUTPUT qd: " << eigen_utils::to_string(qd_target) << "\n";
+            << "[SPEED SATURATION] OUTPUT qd     : " << eigen_utils::to_string(qd) << "\n";
   }
 
   return scale<1;
@@ -342,23 +417,23 @@ inline bool saturateSpeed(double& qd_target,
 
 // ==================================================================================
 template<typename D1, typename D2, typename D3>
-inline bool saturatePosition(Eigen::MatrixBase<D1>& q_target,
+inline bool saturatePosition(Eigen::MatrixBase<D1>& q,
                               const Eigen::MatrixBase<D2>& q_max, 
                                 const Eigen::MatrixBase<D3>& q_min,
                                   std::stringstream* report)
 {
   if(report)
   {
-    *report << "[-----][POS   SATURATION] INPUT  q: " << eigen_utils::to_string(q_target) << "\n";
+    *report << "[-----][POS   SATURATION] INPUT  q: " << eigen_utils::to_string(q) << "\n";
     *report << "[-----][POS   SATURATION] MAX    q: " << eigen_utils::to_string(q_max) << "\n";
     *report << "[-----][POS   SATURATION] MIN    q: " << eigen_utils::to_string(q_min) << "\n";
   }
-  if( eigen_utils::size(q_target) != eigen_utils::size(q_max) 
-   || eigen_utils::size(q_target) != eigen_utils::size(q_min))
+  if( eigen_utils::size(q) != eigen_utils::size(q_max) 
+   || eigen_utils::size(q) != eigen_utils::size(q_min))
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " Inputs dimension mismatch.").c_str());
   }
-  for(size_t i=0; i<eigen_utils::rows(q_target);i++)
+  for(size_t i=0; i<eigen_utils::rows(q);i++)
   {
     if(q_max(i)<=q_min(i))
       throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max' is less than 'q_min'").c_str());
@@ -366,34 +441,34 @@ inline bool saturatePosition(Eigen::MatrixBase<D1>& q_target,
 
 
   MatD<D1> dq;
-  eigen_utils::resize(dq, q_target.rows());
-  size_t nAx = eigen_utils::size(q_target);
+  eigen_utils::resize(dq, q.rows());
+  size_t nAx = eigen_utils::size(q);
   for(size_t iAx=0;iAx<nAx;iAx++)
   {
-    dq(iAx)  = q_target(iAx) > q_max(iAx) ? (q_max(iAx) - q_target(iAx))
-             : q_target(iAx) < q_min(iAx) ? (q_min(iAx) - q_target(iAx))
+    dq(iAx)  = q(iAx) > q_max(iAx) ? (q_max(iAx) - q(iAx))
+             : q(iAx) < q_min(iAx) ? (q_min(iAx) - q(iAx))
              : 0.0;
   }
 
-  q_target += dq;
+  q += dq;
   if(report)
   {
     *report << (dq.cwiseAbs().maxCoeff()>0.0 ? "[TRUE ]": "[FALSE]" )
-            << "[POS   SATURATION] OUTPUT q: " << eigen_utils::to_string(q_target) << "\n";
+            << "[POS   SATURATION] OUTPUT q: " << eigen_utils::to_string(q) << "\n";
   }
 
   return (dq.cwiseAbs().maxCoeff()>0.0);
 }
 
 
-inline bool saturatePosition(double& q_target, 
+inline bool saturatePosition(double& q, 
                               const double& q_max,
                                 const double& q_min,
                                   std::stringstream* report)
 {
   if(report)
   {
-    *report << "[-----][POS   SATURATION] INPUT  q: " << eigen_utils::to_string(q_target) << "\n";
+    *report << "[-----][POS   SATURATION] INPUT  q: " << eigen_utils::to_string(q) << "\n";
     *report << "[-----][POS   SATURATION] MAX    q: " << eigen_utils::to_string(q_max) << "\n";
     *report << "[-----][POS   SATURATION] MIN    q: " << eigen_utils::to_string(q_min) << "\n";
   }
@@ -403,16 +478,16 @@ inline bool saturatePosition(double& q_target,
   }
 
   double dq;
-  dq   = q_target > q_max ? (q_max - q_target)
-       : q_target < q_min ? (q_min + q_target)
+  dq   = q > q_max ? (q_max - q)
+       : q < q_min ? (q_min + q)
        : 0.0;
 
-  q_target += dq;
+  q += dq;
 
   if(report)
   {
     *report << (std::fabs(dq)>0.0 ? "[TRUE ]": "[FALSE]" )
-            << "[POS   SATURATION] OUTPUT q: " << eigen_utils::to_string(q_target) << "\n";
+            << "[POS   SATURATION] OUTPUT q: " << eigen_utils::to_string(q) << "\n";
   }
 
   return (std::fabs(dq)>0.0);
