@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     Eigen::VectorXd q_min = -q_max;
 
     Eigen::VectorXd qd_max = 1.2 * I6;
-    Eigen::VectorXd qdd_max = 10 * qd_max;
+    Eigen::VectorXd qdd_max = 250 * qd_max;
 
 // Target inside
     Eigen::Matrix<double,6,6> R6q = Eigen::Matrix<double,6,1>::Random().asDiagonal();
