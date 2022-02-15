@@ -216,7 +216,7 @@ TEST(TestSuite, OneDoFSaturateVelFirstOrder)
               std::cout << "-----------------------------" << std::endl;
               const double _qd = qd;
               std::stringstream report;
-                EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeedFirstOrderState(qd,
+                EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,
                   qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
               if(saturated) 
               {
@@ -266,7 +266,7 @@ TEST(TestSuite, SixDoFSaturateVelFirstOrder)
               std::cout << "-----------------------------" << std::endl;
               const auto _qd = qd;
               std::stringstream report;
-                EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeedFirstOrderState(qd,
+                EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,
                   qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
               if(saturated) 
               {
@@ -312,7 +312,7 @@ TEST(TestSuite, OneDoFSaturateVelFullState)
                     std::cout << "-----------------------------" << std::endl;
                     const double _qd = qd;
                     std::stringstream report;
-                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeedFullState(qd, 
+                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
                         q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
                     if(saturated) 
                     {
@@ -378,7 +378,7 @@ TEST(TestSuite, SixDoFSaturateVelFullState)
                     std::cout << "-----------------------------" << std::endl;
                     const auto _qd = qd;
                     std::stringstream report;
-                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeedFullState(qd, 
+                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
                               q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
                     if(saturated) 
                     {

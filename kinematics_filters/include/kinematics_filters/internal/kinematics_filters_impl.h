@@ -16,7 +16,7 @@ using MatD = Eigen::Matrix<double,
 
 // ==================================================================================
 template<typename D1, typename D2, typename D3, typename D4, typename D5>
-inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd,
+inline bool saturateSpeed(Eigen::MatrixBase<D1>&  qd,
                             const Eigen::MatrixBase<D3>& q_prev,
                               const Eigen::MatrixBase<D2>& qd_prev,
                                 const Eigen::MatrixBase<D4>& q_max,
@@ -40,7 +40,7 @@ inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd,
       throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max="+
         std::to_string(q_max(i))+"' is less than 'q_min="+std::to_string(q_min(i))+"'").c_str());
   }
-  bool saturated = saturateSpeedFirstOrderState(qd,
+  bool saturated = saturateSpeed(qd,
                       qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
 
   if(report)
@@ -82,7 +82,7 @@ inline bool saturateSpeedFullState(Eigen::MatrixBase<D1>&  qd,
 }
 
 
-inline bool saturateSpeedFullState(double& qd,
+inline bool saturateSpeed(double& qd,
                             const double& q_prev,
                               const double& qd_prev,
                                 const double& q_max,
@@ -99,7 +99,7 @@ inline bool saturateSpeedFullState(double& qd,
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "The range is wrong. 'q_max' is less than 'q_min'").c_str());
   }
 
-  bool saturated = saturateSpeedFirstOrderState(qd,
+  bool saturated = saturateSpeed(qd,
                       qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, report);
 
   if(report)
@@ -136,7 +136,7 @@ inline bool saturateSpeedFullState(double& qd,
 
 // ==================================================================================
 template<typename D1, typename D2, typename D3, typename D4>
-inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd,
+inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
                             const Eigen::MatrixBase<D2>& qd_prev,
                               const Eigen::MatrixBase<D3>& qd_max,
                                 const Eigen::MatrixBase<D4>& qdd_max,
@@ -249,7 +249,7 @@ inline bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>& qd,
 }
 
 
-inline bool saturateSpeedFirstOrderState(double& qd,
+inline bool saturateSpeed(double& qd,
                             const double& qd_prev,
                               const double& qd_max, 
                                 const double& qdd_max,

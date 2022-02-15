@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(BUILD_EXAMPLES ON)
+
 find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
 find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
 
@@ -29,7 +31,9 @@ catkin_package(
 ###########
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
-add_executable(${PROJECT_NAME}_example example/example.cpp)
+if(BUILD_EXAMPLES)
+  add_executable(${PROJECT_NAME}_example example/example.cpp)
+endif()
 
 #############
 ## Install ##

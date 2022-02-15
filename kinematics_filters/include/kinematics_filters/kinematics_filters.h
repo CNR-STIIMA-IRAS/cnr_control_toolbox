@@ -31,7 +31,7 @@ namespace cnr_control_toolbox
  * @return false 
  */
 template<typename D1,typename D2,typename D3,typename D4,typename D5,typename D6,typename D7>
-bool saturateSpeedFullState(Eigen::MatrixBase<D1>&         qd,
+bool saturateSpeed(Eigen::MatrixBase<D1>&         qd,
                     const Eigen::MatrixBase<D3>&   q_prev,  
                       const Eigen::MatrixBase<D2>&   qd_prev,
                         const Eigen::MatrixBase<D4>&   q_max,
@@ -45,7 +45,7 @@ bool saturateSpeedFullState(Eigen::MatrixBase<D1>&         qd,
 
 
 //! SPECIAL CASE 1DOF
-bool saturateSpeedFullState(double&           qd,
+bool saturateSpeed(double&           qd,
                     const double&      q_prev,
                       const double&      qd_prev,
                         const double&      q_max,
@@ -77,7 +77,7 @@ bool saturateSpeedFullState(double&           qd,
  * @return false 
  */
 template<typename D1,typename D2,typename D3,typename D4>
-bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>&       qd,
+bool saturateSpeed(Eigen::MatrixBase<D1>&       qd,
                     const Eigen::MatrixBase<D2>& qd_prev,
                       const Eigen::MatrixBase<D3>& qd_max,
                         const Eigen::MatrixBase<D4>& qdd_max,
@@ -87,7 +87,7 @@ bool saturateSpeedFirstOrderState(Eigen::MatrixBase<D1>&       qd,
                                 std::stringstream*           report);
 
 /// Special case 1 dof
-bool saturateSpeedFirstOrderState(double&            qd,
+bool saturateSpeed(double&            qd,
                     const double&      qd_prev,
                       const double&      qd_max,
                         const double&      qdd_max,

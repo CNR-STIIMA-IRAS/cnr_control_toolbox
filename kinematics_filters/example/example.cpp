@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     {
         Eigen::VectorXd qd = (q_target-q_prev) / dt;
         report << cnt++ << "-------" << std::endl;
-        saturated |= cnr_control_toolbox::saturateSpeedFullState(qd, q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, 1.0, true, &report);
+        saturated |= cnr_control_toolbox::saturateSpeed(qd, q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, 1.0, true, &report);
 
         Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "", "");
         ofile  << cnt * dt<<","<< q_target.transpose().format(CommaInitFmt)<<", "
