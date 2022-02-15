@@ -112,13 +112,14 @@ TEST(TestSuite, SixDoFSaturatePos)
     auto q_min = qq_min[i];
 
     std::vector<Eigen::Matrix<double,6,1>> qq = { q_max - 2.0*I6, q_min + 2.0*I6, q_max + 2.0*I6, q_min - 2.0*I6};
-    bool saturated = true;
     for(auto & q : qq)
     {
       std::cout << "-----------------------------" << std::endl;
       std::stringstream report;
+      bool saturated = true;
       EXPECT_TRUE(catch_throw([&]{ saturated = saturatePosition(q,q_max, q_min, nullptr);}));
-      std::cout << report.str();
+      if(saturated)
+        std::cout << report.str();
     }
   }
 }
