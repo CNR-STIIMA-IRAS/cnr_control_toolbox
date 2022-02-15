@@ -15,8 +15,6 @@ using namespace eigen_control_toolbox;
 
 Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "", "");
 
-ros::NodeHandle* nh;
-
 constexpr int stress_cycles = 1e5;
 constexpr int cycles = 1000;
 double natural_frequency =   50; // [rad/s] 2 pi * f
@@ -379,13 +377,8 @@ TEST(TestSuite, FirstOrderHighPassX)
 
 
 
-int main(int argc,char** argv)
-{
-  // ------ Init ROS ------
-  ros::init(argc,&*argv,"test_filters");
-  
-  nh = new ros::NodeHandle();
-
+int main(int argc,char* argv[])
+{ 
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS(); 
 }

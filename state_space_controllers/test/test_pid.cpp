@@ -4,10 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_controllers/controllers.h>
-//#include <state_space_systems/ros_params.h>
 
 using ControllerX = eigen_control_toolbox::Controller<-1>;
 using ControllerXStateSpaceArgs = eigen_control_toolbox::ControllerStateSpaceArgs<-1>;
@@ -128,11 +126,8 @@ TEST(TestSuite, ProportionalIntegralController)
 }
 
 
-int main(int argc,char** argv)
-{
-  // ------ Init ROS ------
-  ros::init(argc,&*argv,"test_pid");
-  
+int main(int argc,char* argv[])
+{ 
   srand((unsigned int) time(0));
 
   testing::InitGoogleTest(&argc, argv);

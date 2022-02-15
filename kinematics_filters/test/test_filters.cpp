@@ -14,7 +14,7 @@ namespace detail
 {
   struct unwrapper
   {
-    unwrapper(std::exception_ptr pe) : pe_(pe) {}
+    explicit unwrapper(std::exception_ptr pe) : pe_(pe) {}
 
     operator bool() const { return bool(pe_);}
 
@@ -82,13 +82,14 @@ TEST(TestSuite, OneDoFSaturatePos)
     double q_min = qq_min[i];
 
     std::vector<double> qq = { q_max - 2.0, q_min + 2.0, q_max + 2.0, q_min - 2.0};
-    bool saturated = true;
     for(auto & q : qq)
     {
       std::cout << "-----------------------------" << std::endl;
       std::stringstream report;
+      bool saturated = true;
       EXPECT_TRUE(catch_throw([&]{ saturated = saturatePosition(q,q_max, q_min, nullptr);}));
-      std::cout << report.str();
+      if(saturated) 
+        std::cout << report.str();
     }
   }
 
@@ -401,7 +402,7 @@ TEST(TestSuite, SixDoFSaturateVelFullState)
 }
 
 
-int main(int argc,char** argv)
+int main(int argc,char* argv[])
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS(); 
