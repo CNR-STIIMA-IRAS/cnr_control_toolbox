@@ -154,10 +154,10 @@ TEST(TestSuite, ControllerSS)
 
 }
 
-int main(int argc,char** argv)
+int main(int argc,char* argv[])
 {
   // ------ Init ROS ------
-  ros::init(argc,&*argv,"test_pid");
+  ros::init(argc,argv,"test_pid");
   nh = new ros::NodeHandle();
 
   srand((unsigned int) time(0));

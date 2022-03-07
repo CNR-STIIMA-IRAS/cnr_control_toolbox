@@ -40,7 +40,6 @@
 #include <gtest/gtest.h>
 #include <gtest/gtest-death-test.h>
 
-#include <ros/ros.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_filters/filtered_values.h>
 
