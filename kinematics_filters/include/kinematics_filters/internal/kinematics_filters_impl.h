@@ -34,7 +34,7 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>&  qd,
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "inputs dimension mismatch.").c_str());
   }
-  for(size_t i=0; i<eigen_utils::rows(qd);i++)
+  for(int i=0; i<eigen_utils::rows(qd);i++)
   {
     if(q_max(i)<=q_min(i))
       throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max="+
@@ -48,18 +48,18 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>&  qd,
     *report << "[-----][BRK   SATURATION] INPUT  qd: " << eigen_utils::to_string(qd) << "\n";
   }
 
-  size_t nAx = eigen_utils::size(qd);
+  int nAx = eigen_utils::size(qd);
   MatD<D1> braking_distance, q_saturated_qd;
   eigen_utils::resize(braking_distance, nAx);
   eigen_utils::resize(q_saturated_qd  , nAx);
-  for(size_t iAx=0; iAx<nAx;iAx++)
+  for(int iAx=0; iAx<nAx;iAx++)
   {
     braking_distance(iAx)  = 0.5 * qdd_max(iAx)
                              * std::pow(std::abs(qd(iAx))/qdd_max(iAx) , 2.0);
   }
 
   q_saturated_qd = q_prev + qd_prev* dt;
-  for(size_t iAx=0; iAx<nAx;iAx++)
+  for(int iAx=0; iAx<nAx;iAx++)
   {
     if ((q_saturated_qd(iAx) > (q_max(iAx) - braking_distance(iAx))) && (qd(iAx)>0))
     {
@@ -170,7 +170,7 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
                       <<"[-----][ACC   SATURATION] INPUT  qdd max: " << eigen_utils::to_string(qdd_max)<<"\n";
   }
 
-  size_t nAx = eigen_utils::rows(qd);
+  int nAx = eigen_utils::rows(qd);
 
   MatD<D1> qd_sup, qd_inf, dqd;
   eigen_utils::resize(qd_sup, nAx);
@@ -180,7 +180,7 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
   qd_sup = qd_prev + qdd_max * dt;
   qd_inf = qd_prev - qdd_max * dt;
   eigen_utils::setZero(dqd);
-  for(size_t iAx=0;iAx<nAx;iAx++)
+  for(int iAx=0;iAx<nAx;iAx++)
   {
     dqd(iAx) = qd(iAx) > qd_sup(iAx) ? (qd_sup(iAx) - qd(iAx))
              : qd(iAx) < qd_inf(iAx) ? (qd_inf(iAx) - qd(iAx))
@@ -227,7 +227,7 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
 
 
   double _max_velocity_multiplier = max_velocity_multiplier;
-  for(size_t iAx=0;iAx<eigen_utils::size(qd_max);iAx++)
+  for(int iAx=0;iAx<eigen_utils::size(qd_max);iAx++)
   {
     _max_velocity_multiplier = std::fabs(qd_prev(iAx)) > qd_max(iAx) 
                               ? std::max( _max_velocity_multiplier, 1.01 * std::fabs(qd_prev(iAx)) / qd_max(iAx) )
@@ -337,7 +337,7 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + "inputs dimension mismatch.").c_str());
   }
-  for(size_t iAx=0; iAx<eigen_utils::rows(qd_max);iAx++)
+  for(int iAx=0; iAx<eigen_utils::rows(qd_max);iAx++)
   {
     if(eigen_utils::at(qd_max,iAx) < 1e-6)
     {
@@ -346,13 +346,13 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
     }
   }
 
-  size_t nAx = eigen_utils::rows(qd);
+  int nAx = eigen_utils::rows(qd);
 
   MatD<D1> scale;
   eigen_utils::resize(scale, nAx);
   
 
-  for(size_t iAx=0;iAx<nAx;iAx++)
+  for(int iAx=0;iAx<nAx;iAx++)
   {
     scale(iAx) = std::fabs(qd(iAx)) > _qd_max(iAx)
                ? _qd_max(iAx)/ std::fabs(qd(iAx) )
@@ -433,7 +433,7 @@ inline bool saturatePosition(Eigen::MatrixBase<D1>& q,
   {
     throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " Inputs dimension mismatch.").c_str());
   }
-  for(size_t i=0; i<eigen_utils::rows(q);i++)
+  for(int i=0; i<eigen_utils::rows(q);i++)
   {
     if(q_max(i)<=q_min(i))
       throw std::runtime_error( (__PRETTY_FUNCTION__ + std::string(":") + " The range is wrong. 'q_max' is less than 'q_min'").c_str());
@@ -442,8 +442,8 @@ inline bool saturatePosition(Eigen::MatrixBase<D1>& q,
 
   MatD<D1> dq;
   eigen_utils::resize(dq, q.rows());
-  size_t nAx = eigen_utils::size(q);
-  for(size_t iAx=0;iAx<nAx;iAx++)
+  int nAx = eigen_utils::size(q);
+  for(int iAx=0;iAx<nAx;iAx++)
   {
     dq(iAx)  = q(iAx) > q_max(iAx) ? (q_max(iAx) - q(iAx))
              : q(iAx) < q_min(iAx) ? (q_min(iAx) - q(iAx))
