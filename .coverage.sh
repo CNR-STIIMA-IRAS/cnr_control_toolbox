@@ -8,6 +8,8 @@ cp /home/runner/work/cnr_control_toolbox/cnr_control_toolbox/codecov.yml "$ws"/
 
 cd "$ws"
 
+source ./devel/setup.bash
+
 for val in ${StringArray[@]}; do
 
     echo "Generating coverage for '$val'"
