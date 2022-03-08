@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -a StringArray=("state_space_systems" "state_space_controllers" "state_space_filters" "state_space_ros")
+declare -a StringArray=("kinematics_filters" "state_space_systems" "state_space_controllers" "state_space_filters" "state_space_ros")
 
 ws=~/target_ws
 
