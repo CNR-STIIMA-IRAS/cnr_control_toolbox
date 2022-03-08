@@ -211,7 +211,10 @@ inline bool saturateSpeed(Eigen::MatrixBase<D1>& qd,
       }
       else
       {
-        *report << "[-----][ACC   SATURATION] !!!!!! IT IS IMPOSSILBE TO PRESERVE DIRECTION (min dqd: " << dqd.minCoeff() <<", max dqd: "<< dqd.maxCoeff()  << ")\n";
+        if(report)
+        {
+          *report << "[-----][ACC   SATURATION] !!!!!! IT IS IMPOSSILBE TO PRESERVE DIRECTION (min dqd: " << dqd.minCoeff() <<", max dqd: "<< dqd.maxCoeff()  << ")\n";
+        }
         qd = qd + dqd;
       }
     }

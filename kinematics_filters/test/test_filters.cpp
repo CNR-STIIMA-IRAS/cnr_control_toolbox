@@ -84,12 +84,8 @@ TEST(TestSuite, OneDoFSaturatePos)
     std::vector<double> qq = { q_max - 2.0, q_min + 2.0, q_max + 2.0, q_min - 2.0};
     for(auto & q : qq)
     {
-      std::cout << "-----------------------------" << std::endl;
-      std::stringstream report;
       bool saturated = true;
       EXPECT_TRUE(catch_throw([&]{ saturated = saturatePosition(q,q_max, q_min, nullptr);}));
-      if(saturated) 
-        std::cout << report.str();
     }
   }
 
@@ -114,12 +110,8 @@ TEST(TestSuite, SixDoFSaturatePos)
     std::vector<Eigen::Matrix<double,6,1>> qq = { q_max - 2.0*I6, q_min + 2.0*I6, q_max + 2.0*I6, q_min - 2.0*I6};
     for(auto & q : qq)
     {
-      std::cout << "-----------------------------" << std::endl;
-      std::stringstream report;
       bool saturated = true;
       EXPECT_TRUE(catch_throw([&]{ saturated = saturatePosition(q,q_max, q_min, nullptr);}));
-      if(saturated)
-        std::cout << report.str();
     }
   }
 }
@@ -178,14 +170,8 @@ TEST(TestSuite, SixDoFSaturateVel)
         for(auto & qd : qqd)
         {
           const auto _qd = qd;
-          std::cout << "-----------------------------" << std::endl;
-          std::stringstream report;
           EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,qd_max, max_velocity_multiplier, preserve_direction, nullptr);}));
-          if(saturated) 
-          {
-            std::cout << report.str();
-          }
-          else
+          if(!saturated) 
           {
             std::cout << "CHECK: " << (qd - qd).maxCoeff() << " - " << ((qd - qd).maxCoeff() ==0) << std::endl;;
           }
@@ -215,16 +201,10 @@ TEST(TestSuite, OneDoFSaturateVelFirstOrder)
           {
             for(auto & qd : qqd)
             {
-              std::cout << "-----------------------------" << std::endl;
               const double _qd = qd;
-              std::stringstream report;
                 EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,
                   qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
-              if(saturated) 
-              {
-                std::cout << report.str();
-              }
-              else
+              if(!saturated) 
               {
                 std::cout << "CHECK: " << std::fabs(qd - qd)<< " - " << (std::fabs(qd - qd)==0) << std::endl;;
               }
@@ -265,16 +245,10 @@ TEST(TestSuite, SixDoFSaturateVelFirstOrder)
           {
             for(auto & qd : qqd)
             {
-              std::cout << "-----------------------------" << std::endl;
               const auto _qd = qd;
-              std::stringstream report;
-                EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,
+              EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd,
                   qd_prev, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
-              if(saturated) 
-              {
-                std::cout << report.str();
-              }
-              else
+              if(!saturated) 
               {
                 std::cout << "CHECK: " << eigen_utils::to_string(qd - qd)<< std::endl;;
               }
@@ -311,16 +285,10 @@ TEST(TestSuite, OneDoFSaturateVelFullState)
                 {
                   for(auto & qd : qqd)
                   {
-                    std::cout << "-----------------------------" << std::endl;
                     const double _qd = qd;
-                    std::stringstream report;
-                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
+                    EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
                         q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
-                    if(saturated) 
-                    {
-                      std::cout << report.str();
-                    }
-                    else
+                    if(!saturated) 
                     {
                       std::cout << "CHECK: " << std::fabs(qd - qd)<< " - " << (std::fabs(qd - qd)==0) << std::endl;;
                     }
@@ -377,16 +345,10 @@ TEST(TestSuite, SixDoFSaturateVelFullState)
                 {
                   for(auto & qd : qqd)
                   {
-                    std::cout << "-----------------------------" << std::endl;
                     const auto _qd = qd;
-                    std::stringstream report;
-                      EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
+                    EXPECT_TRUE(catch_throw([&]{ saturated = saturateSpeed(qd, 
                               q_prev, qd_prev, q_max, q_min, qd_max, qdd_max, dt, max_velocity_multiplier, preserve_direction, nullptr);}));
-                    if(saturated) 
-                    {
-                      std::cout << report.str();
-                    }
-                    else
+                    if(!saturated) 
                     {
                       std::cout << "CHECK: " << eigen_utils::to_string(qd - qd)<< std::endl;;
                     }
