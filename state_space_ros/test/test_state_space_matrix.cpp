@@ -111,10 +111,10 @@ TEST(TestSuite, TestDiscreteStateSpaceXXX)
 }
 
 
-int main(int argc,char** argv)
+int main(int argc,char* argv[])
 {
   // ------ Init ROS ------
-  ros::init(argc,&*argv,"test_filters");
+  ros::init(argc,argv,"test_filters");
   
   nh = new ros::NodeHandle("~");
 

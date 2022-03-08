@@ -5,8 +5,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <ros/ros.h>
-
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_filters/common_filters.h>
 #include <gtest/gtest.h>
@@ -14,8 +12,6 @@
 using namespace eigen_control_toolbox;
 
 Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "", "");
-
-ros::NodeHandle* nh;
 
 constexpr int stress_cycles = 1e5;
 constexpr int cycles = 1000;
@@ -379,13 +375,8 @@ TEST(TestSuite, FirstOrderHighPassX)
 
 
 
-int main(int argc,char** argv)
+int main(int argc,char* argv[])
 {
-  // ------ Init ROS ------
-  ros::init(argc,&*argv,"test_filters");
-  
-  nh = new ros::NodeHandle();
-
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS(); 
 }

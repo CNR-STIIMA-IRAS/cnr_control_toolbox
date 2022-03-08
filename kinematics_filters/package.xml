@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>kinematics_filters</name>
+  <version>0.0.0</version>
+  <description>The kinematics_filters package</description>
+  <maintainer email="nicola.pedrocchi@stiima.cnr.it">Nicola Pedrocchi</maintainer>
+
+  <license>BSD-3</license>
+
+  <author email="nicola.pedrocchi@stiima.cnr.it">Nicola Pedrocchi</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>eigen_matrix_utils</build_depend>
+  <build_depend>state_space_systems</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_export_depend>eigen_matrix_utils</build_export_depend>
+  <build_export_depend>state_space_systems</build_export_depend>
+  <exec_depend>eigen_matrix_utils</exec_depend>
+  <exec_depend>state_space_systems</exec_depend>
+
+  <test_depend>curl</test_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

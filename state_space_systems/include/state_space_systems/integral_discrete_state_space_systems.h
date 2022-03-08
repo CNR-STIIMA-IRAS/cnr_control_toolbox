@@ -43,7 +43,7 @@ template<typename D> bool defaultIntegralDiscreteStateSpaceMatrixD(Eigen::Matrix
  *      [ 0   I  ]
  * B  = [ 1/2*dt^2*I ]
  *
- * x(k) = A * y(k-1) + B*u(k);
+ * x(k) = A * x(k-1) + B*u(k);
  * 
  * y(k) = C * x(k)   + D*u(k);
  * 
