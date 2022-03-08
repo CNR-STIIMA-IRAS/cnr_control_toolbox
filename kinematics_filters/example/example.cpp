@@ -11,7 +11,7 @@ const Eigen::Matrix<double,6,1> I6 = Eigen::Matrix<double,6,1>::Ones();
 const Eigen::Matrix<double,6,1> Z6 = Eigen::Matrix<double,6,1>::Zero();
 
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
     Eigen::VectorXd q_max = 10 * I6  + 2 * Eigen::Matrix<double,6,1>::Random() ;
     Eigen::VectorXd q_min = -q_max;

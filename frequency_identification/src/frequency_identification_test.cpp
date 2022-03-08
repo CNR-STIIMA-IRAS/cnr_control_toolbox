@@ -1,6 +1,6 @@
 #include <frequency_identification/frequency_identification.h>
 #include <sensor_msgs/JointState.h>
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "multisine_test");
   ros::NodeHandle pnh("~");
