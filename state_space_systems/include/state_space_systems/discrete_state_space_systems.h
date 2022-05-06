@@ -156,17 +156,17 @@ public:
   //! accessor to the order (state dimension)
   [[deprecated("Use the xDim(), shorter :)")]]
   int getOrder() const;
-  int xDim() const;
+  int xDim() const override;
 
   //! accessor to the input dimension
   [[deprecated("Use the uDim(), shorter :)")]]
   int getNumberOfInputs() const;
-  int uDim() const;
+  int uDim() const override;
 
   //! accessor to the output dimension
   [[deprecated("Use the yDim(), shorter :)")]]
   int getNumberOfOutputs()  const;
-  int yDim() const;
+  int yDim() const override;
   
   /**
    * @brief set the state. The dimension is checked
