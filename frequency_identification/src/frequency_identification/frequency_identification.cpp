@@ -26,7 +26,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <numeric>
 #include <frequency_identification/frequency_identification.h>
 
 namespace  identification
@@ -83,8 +83,7 @@ MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
     m_freq_resp(idx)=std::complex<double>(fr_real.at(idx),fr_imag.at(idx));
   }
 
-
-  if (not loadParam())
+  if (!loadParam())
     throw std::invalid_argument("unable to initialize multisine estimator");
 }
 
