@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(frequency_identification)
 
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
-endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cnrConfigMacros.cmake)
+###################
+## PRELIMINARIES ##
+###################
+cnr_set_flags()
 
 find_package(catkin REQUIRED COMPONENTS
   cnr_logger
@@ -28,12 +27,14 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} src/${PROJECT_NAME}/frequency_identification.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+cnr_target_compile_options(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME}_test src/frequency_identification_test.cpp)
 add_dependencies(${PROJECT_NAME}_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME} ${catkin_LIBRARIES})
+cnr_target_compile_options(${PROJECT_NAME}_test)
 
 install(TARGETS ${PROJECT_NAME}_test
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

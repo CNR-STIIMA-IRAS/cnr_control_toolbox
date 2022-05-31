@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.1)
 project(kinematics_filters)
 
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
-endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cnrConfigMacros.cmake)
+###################
+## PRELIMINARIES ##
+###################
+cnr_set_flags()
 
 option(BUILD_EXAMPLES ON)
 
@@ -33,6 +32,8 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 if(BUILD_EXAMPLES)
   add_executable(${PROJECT_NAME}_example example/example.cpp)
+  target_link_libraries(${PROJECT_NAME}_example ${catkin_LIBRARIES} ${EIGEN3_LIBRARIES})
+  cnr_target_compile_options(${PROJECT_NAME})
 endif()
 
 #############
@@ -58,7 +59,7 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_filters test/test_filters.launch test/test_filters.cpp)
   add_dependencies(test_filters ${catkin_EXPORTED_TARGETS})
   target_link_libraries(test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
-  target_compile_options(test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
+  cnr_target_compile_options(test_filters)
 
   if(ENABLE_COVERAGE_TESTING)
     set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")

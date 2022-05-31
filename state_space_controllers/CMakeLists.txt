@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 project(state_space_controllers)
 
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
-endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cnrConfigMacros.cmake)
+
+cnr_set_flags()
 
 find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
 find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
@@ -27,11 +24,7 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-include_directories(
- include
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
-)
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 #############
 ## Install ##
@@ -57,7 +50,7 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_controllers test/test_controllers.launch test/test_pid.cpp)
   add_dependencies(test_controllers ${catkin_EXPORTED_TARGETS})
   target_link_libraries(test_controllers ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${state_space_ros_LIBRARIES} ${roscpp_LIBRARIES})
-  target_compile_options(test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
+  cnr_target_compile_options(test_controllers)
 
   if(ENABLE_COVERAGE_TESTING)
     set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
