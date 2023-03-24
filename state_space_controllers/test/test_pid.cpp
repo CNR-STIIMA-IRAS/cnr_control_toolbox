@@ -66,7 +66,7 @@ TEST(TestSuite, ProportionalController)
 
   EXPECT_FALSE( proportional.setMatrices(a_notok,what) );
   
-  ROS_INFO("ctrl1:");
+  std::cout <<"ctrl1:" << std::endl;
   EXPECT_NO_FATAL_FAILURE(std::cout << proportional << std::endl; );
 
   for (unsigned int idx=0;idx<200;idx++)
@@ -104,7 +104,7 @@ TEST(TestSuite, ProportionalIntegralController)
   EXPECT_TRUE( pi.setPI(Kp_ok, Ki_ok, sampling_period, what) );
   EXPECT_FALSE( pi.setPI(Kp_notok, Ki_notok, sampling_period, what) );
 
-  ROS_INFO("ctrl2:");
+  std::cout <<"ctrl2:" << std::endl;
   EXPECT_NO_FATAL_FAILURE(std::cout << pi << std::endl; );
 
   for (unsigned int idx=0;idx<200;idx++)
