@@ -1,70 +1,172 @@
-cmake_minimum_required(VERSION 3.1)
-project(state_space_filters)
+#############################
+## PRELIMINARIES           ##
+#############################
+cmake_minimum_required(VERSION 3.16.0)
 
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cnrConfigMacros.cmake)
+
+get_project_name("package.xml" extracted_name extracted_version)
+
+project(${extracted_name} VERSION ${extracted_version} LANGUAGES CXX)
+
+cnr_set_flags()
+#############################
+## END - PRELIMINARIES     ##
+#############################
+
+#############################
+## OPTIONS                 ##
+#############################
+option(USE_ROS1                 "ROS SUPPORT" ON)
+option(ENABLE_TESTING           "ENABLE TESTING" OFF)
+option(ENABLE_COVERAGE_TESTING  "ENABLE COVERAGE TESTING" OFF)
+option(COMPILE_EXAMPLE          "COMPILE THE EXAMPLE" OFF)
+
+if(USE_ROS1)
+  set(ENABLE_TESTING ${CATKIN_ENABLE_TESTING})
 endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+#############################
+## END - OPTIONS           ##
+#############################
 
-find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
+#############################
+## DEPENDANCIES            ##
+#############################
 find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
 
-## Add gtest based cpp test target and link libraries
-if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
-  find_package(code_coverage REQUIRED)
-  # Add compiler flags for coverage instrumentation before defining any targets
-  APPEND_COVERAGE_COMPILER_FLAGS()
+if(USE_ROS1)
+  find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
+  catkin_package(
+    INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+    CATKIN_DEPENDS eigen_matrix_utils state_space_systems
+  ) 
+else()
+  find_package(eigen_matrix_utils REQUIRED)
+  find_package(state_space_systems REQUIRED )
 endif()
 
+cnr_install_directories(USE_ROS1 
+  CNR_INSTALL_INCLUDE_DIR CNR_INSTALL_LIB_DIR CNR_INSTALL_BIN_DIR CNR_INSTALL_SHARE_DIR)
+cnr_enable_testing(ENABLE_TESTING ENABLE_COVERAGE USE_ROS1)
+#############################
+## END DEPENDANCIES        ##
+#############################
 
-catkin_package(
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
-  CATKIN_DEPENDS eigen_matrix_utils state_space_systems
-)
 
-###########
-## Build ##
-###########
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
+#################
+## Build       ##
+#################
+list(APPEND DEPENDENCIES_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS})
+if(USE_ROS1)
+  list(APPEND DEPENDENCIES_INCLUDE_DIRS ${catkin_INCLUDE_DIRS})
+else()
+  list(APPEND DEPENDENCIES_INCLUDE_DIRS ${eigen_matrix_utils_INCLUDE_DIRS} ${state_space_systems_INCLUDE_DIRS})
+endif()
+
+list(APPEND BUILD_INTERFACE_INCLUDE_DIRS ${DEPENDENCIES_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+list(APPEND INSTALL_INTERFACE_INCLUDE_DIRS include ${DEPENDENCIES_INCLUDE_DIRS} include)
+
+add_library(${PROJECT_NAME} src/state_space_filters.cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+  "$<BUILD_INTERFACE:${BUILD_INTERFACE_INCLUDE_DIRS}>"
+  "$<INSTALL_INTERFACE:${INSTALL_INTERFACE_INCLUDE_DIRS}>")
+#################
+## END - Build ##
+#################
+
 
 #############
 ## Install ##
 #############
-
-# Mark cpp header files for installation
- install(DIRECTORY include/${PROJECT_NAME}/
-   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-   FILES_MATCHING PATTERN "*.h"
-   PATTERN ".svn" EXCLUDE
+install(DIRECTORY include/${PROJECT_NAME}
+        DESTINATION ${CNR_INSTALL_INCLUDE_DIR}
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN ".git" EXCLUDE
 )
+
+install(TARGETS ${PROJECT_NAME}
+        ARCHIVE DESTINATION ${CNR_INSTALL_LIB_DIR}
+        LIBRARY DESTINATION ${CNR_INSTALL_LIB_DIR}
+        RUNTIME DESTINATION ${CNR_INSTALL_BIN_DIR}
+)
+
+if(USE_ROS1)
+  install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE)
+endif()
+###################
+## END - Install ##
+###################
+
+##################################
+## CMAKE CONFIG (IF NOT CATKIN) ##
+##################################
+if(NOT USE_ROS1)
+  
+  install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT export_state_space_systems
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+
+  # export targets
+  set(export_targets ${export_targets};state_space_systems_utilities)
+  set(export_targets ${export_targets};state_space_systems_server)
+  export(EXPORT export_state_space_systems
+    FILE "${PROJECT_BINARY_DIR}/export_state_space_systems.cmake")
+
+  # Create the state_space_systemsConfig.cmake
+  set(CONF_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
+  configure_file(state_space_systemsConfig.cmake.in
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_systemsConfig.cmake" @ONLY)
+
+  # Create the state_space_systemsConfigVersion.cmake
+  configure_file(state_space_systemsConfigVersion.cmake.in
+    "${PROJECT_BINARY_DIR}/state_space_systemsConfigVersion.cmake" @ONLY)
+  
+  install(FILES
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_systemsConfig.cmake"
+    "${PROJECT_BINARY_DIR}/state_space_systemsConfigVersion.cmake"
+    DESTINATION "share/${PROJECT_NAME}/cmake" COMPONENT dev
+  )
+
+  install(EXPORT export_state_space_systems
+    DESTINATION "share/${PROJECT_NAME}/cmake"
+    FILE export_state_space_systems.cmake
+    COMPONENT dev
+  )
+endif()
+##################################
+## CMAKE CONFIG (IF NOT CATKIN) ##
+##################################
 
 #############
 ## Testing ##
 #############
-
 ## Add gtest based cpp test target and link libraries
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  find_package(roscpp REQUIRED)
+if(ENABLE_TESTING)
+  if(USE_ROS1)
 
-  include_directories(${rostest_INCLUDE_DIRS} ${roscpp_INCLUDE_DIRS})
-  add_rostest_gtest(filtered_values_test test/test_filtered_values.launch test/test_filtered_values.cpp)
-  target_link_libraries(filtered_values_test ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
-  target_compile_options(filtered_values_test PUBLIC $<$<CONFIG:Release>:-Ofast >)
+    add_rostest_gtest(filtered_values_test test/test_filtered_values.launch test/test_filtered_values.cpp)
+    target_link_libraries(filtered_values_test ${PROJECT_NAME} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
+    target_compile_options(filtered_values_test PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
-  add_rostest_gtest(test_filters test/test_filters.launch test/test_filters.cpp)
-  add_dependencies(test_filters ${catkin_EXPORTED_TARGETS})
-  target_link_libraries(test_filters ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
-  target_compile_options(test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
+    add_rostest_gtest(test_filters test/test_filters.launch test/test_filters.cpp)
+    target_link_libraries(test_filters ${PROJECT_NAME} ${rostest_LIBRARIES} ${roscpp_LIBRARIES})
+    target_compile_options(test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
 
-  if(ENABLE_COVERAGE_TESTING)
-    set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
-    add_code_coverage(
-      NAME coverage_report
-      DEPENDENCIES filtered_values_test test_filters
-    )
+    if(ENABLE_COVERAGE_TESTING)
+      set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
+      add_code_coverage(
+        NAME coverage_report
+        DEPENDENCIES filtered_values_test test_filters
+      )
+    endif()
   endif()
 endif()
+
+
 
