@@ -73,10 +73,11 @@ TEST(TestSuite, TestDiscreteStateSpaceNNN)
 
   DiscreteStateSpaceNNN ss(args);
   double u;   //input vector
-  double y;  //output vector
+  double y1=0,y2=0;  //output vector
 
-  EXPECT_TRUE(ss.setStateFromLastIO(u,y)); // initialize initial state value for dumpless startup
-  EXPECT_NO_FATAL_FAILURE(y=ss.update(u)); // computing one step, updating state and output
+  EXPECT_TRUE(ss.setStateFromLastIO(u,y1)); // initialize initial state value for dumpless startup
+  EXPECT_NO_FATAL_FAILURE(y2=ss.update(u)); // computing one step, updating state and output
+  std::cout << y1 <<"," << y2 << std::endl;
 }
 
 TEST(TestSuite, TestDiscreteStateSpaceDynamicButOne)

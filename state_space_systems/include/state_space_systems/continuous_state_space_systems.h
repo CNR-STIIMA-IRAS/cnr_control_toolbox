@@ -14,7 +14,6 @@
 namespace eigen_control_toolbox
 {
 
-
 /** 
  * @brief The function extract the Matrices descring the Continuous Space System.
  * The Continuous Space System describe the mathematical equations
