@@ -26,12 +26,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <chrono>
+#include <cnr_logger/cnr_logger_macros.h>
 #include <frequency_identification/frequency_identification.h>
 
 namespace  identification
 {
 
+#if defined(USE_ROS1)
 MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
                                        const cnr_logger::TraceLoggerPtr& logger):
   m_nh(nh),
@@ -87,6 +89,7 @@ MultiSineEstimator::MultiSineEstimator(const ros::NodeHandle& nh,
   if (not loadParam())
     throw std::invalid_argument("unable to initialize multisine estimator");
 }
+#endif
 
 MultiSineEstimator::~MultiSineEstimator()
 {
@@ -94,6 +97,7 @@ MultiSineEstimator::~MultiSineEstimator()
     m_gen_thread.join();
 }
 
+#if defined(USE_ROS1)
 bool MultiSineEstimator::loadParam()
 {
 
@@ -165,6 +169,7 @@ bool MultiSineEstimator::loadParam()
 
   CNR_RETURN_BOOL(m_logger,true);
 }
+#endif
 
 void MultiSineEstimator::getCommand(const double& t, double& x, double& dx, double& ddx)
 {
@@ -206,7 +211,7 @@ void MultiSineEstimator::initTest(const double& dt)
 {
   if (m_state==state::GeneratingInput)
   {
-    ROS_FATAL("time =%f, state = %d",m_time,m_state);
+    CNR_WARN(m_logger,"time =" << m_time << ", state = " <<  m_state);
     CNR_WARN(m_logger,"signal generation is in executiong, waiting for the result");
     return;
   }
@@ -219,7 +224,7 @@ void MultiSineEstimator::initTest(const double& dt)
 
 void MultiSineEstimator::generatingSignalThread(const double &dt)
 {
-  ros::WallTime t0=ros::WallTime::now();
+  auto t0 = std::chrono::high_resolution_clock::now();
   generateCommandSignal(dt);
   m_spetrum_output.clear();
   for (const std::pair<double,std::complex<double>>& p: m_spetrum_command)
@@ -228,8 +233,11 @@ void MultiSineEstimator::generatingSignalThread(const double &dt)
     std::pair<double,std::complex<double>> freq_pair(p.first,c);
     m_spetrum_output.insert(freq_pair);
   }
-  ros::WallTime t1=ros::WallTime::now();
-  CNR_INFO(m_logger,"signal generated in "<<(t1-t0).toSec()<<" seconds");
+  auto t1 = std::chrono::high_resolution_clock::now();
+  double time_taken = 
+      std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+    
+  CNR_INFO(m_logger,"signal generated in "<<(time_taken*1e-9) <<" seconds");
   m_state=state::Running;
   return;
 }
@@ -255,7 +263,7 @@ double MultiSineEstimator::getExperimentTime() const
 
 void MultiSineEstimator::printFreqResp() const
 {
-  ROS_INFO_STREAM("omega = " << m_omega.transpose() << "\nfrequency response = " << m_freq_resp.transpose());
+  CNR_INFO(m_logger, "omega = " << m_omega.transpose() << "\nfrequency response = " << m_freq_resp.transpose());
 }
 
 state MultiSineEstimator::execute(const double& dt, const double& y, double& x, double& dx, double& ddx)
@@ -350,6 +358,7 @@ void MultiSineEstimator::computeFreqResp()
   }
 }
 
+#if defined(USE_ROS1)
 void MultiSineEstimator::saveFreqResp()
 {
   std::vector<double> w;
@@ -365,6 +374,7 @@ void MultiSineEstimator::saveFreqResp()
   m_nh.setParam("frequency_response/imag",freq_resp_imag);
   m_nh.setParam("frequency_response/angular_frequency",w);
 }
+#endif
 
 }  // end namespace identification
 

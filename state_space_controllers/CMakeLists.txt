@@ -35,7 +35,7 @@ endif()
 find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
 
 if(USE_ROS1)
-find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
+  find_package(catkin REQUIRED COMPONENTS eigen_matrix_utils state_space_systems)
   catkin_package(
     INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
     CATKIN_DEPENDS eigen_matrix_utils state_space_systems

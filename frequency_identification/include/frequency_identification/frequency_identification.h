@@ -27,7 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#include <ros/ros.h>
+#if defined(USE_ROS1)
+  #include <ros/ros.h>
+#endif
 #include <Eigen/Dense>
 #include <cnr_logger/cnr_logger.h>
 #include <complex>
@@ -43,20 +45,34 @@ enum state {Idle, GeneratingInput, Running, Complete} ;
 class MultiSineEstimator
 {
 public:
+  explicit MultiSineEstimator() { throw std::runtime_error("TO BE IMPLEMENTED");}
+#if defined(USE_ROS1)
   MultiSineEstimator(const ros::NodeHandle& nh,
                      const cnr_logger::TraceLoggerPtr& logger=NULL);
+#endif
 
   ~MultiSineEstimator();
+#if defined(USE_ROS1)
   bool loadParam();
+#else
+  bool loadParam() { throw std::runtime_error("TO BE IMPLEMENTED");}
+#endif
   state execute(const double& dt, const double &y, double& x, double& dx, double& ddx);
   void initTest(const double &dt);
 
   void printFreqResp() const;
   double getExperimentTime() const;
   state getState();
+  
+#if defined(USE_ROS1)
   void saveFreqResp();
+#else
+  void saveFreqResp() {throw std::runtime_error("TO BE IMPLEMENTED");}
+#endif
 protected:
+#if defined(USE_ROS1)
   ros::NodeHandle m_nh;
+#endif
   std::random_device m_rd;
   std::mt19937 m_rng;
   std::normal_distribution<double> m_gen;

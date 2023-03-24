@@ -1,0 +1,16 @@
+# - Config file for the state_space_systems package
+# It defines the following variables
+#  state_space_systems_INCLUDE_DIRS - include directories for FooBar
+#  state_space_systems_LIBRARIES    - libraries to link against
+#  state_space_systems_EXECUTABLE   - the bar executable
+
+set(state_space_systems_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${state_space_systems_DIR}/export_state_space_systems.cmake")
+
+# These are IMPORTED targets created by state_space_systemsTargets.cmake
+set(state_space_systems_LIBRARIES state_space_systems_utilities)
+
+set(state_space_systems_EXECUTABLE state_space_systems_server)
+
