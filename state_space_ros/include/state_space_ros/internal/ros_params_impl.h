@@ -513,6 +513,130 @@ inline bool setMatricesFromParam(Controller<N,MN>& out,
   return ret;
 }
 
+inline bool importMatricesFromParam(const ros::NodeHandle& nh, 
+                                    const std::string& name, 
+                                    double& natural_frequency,
+                                    double& sampling_period,
+                                    int&    channels)
+{
+  if(nh.hasParam(name+"/natural_frequency"))
+  {
+    if (!nh.getParam(name+"/natural_frequency",natural_frequency))
+    {
+      ROS_ERROR("%s/natural_frequency is not a double",name.c_str());
+      return false;
+    }
+    if (natural_frequency<0)
+    {
+      ROS_ERROR("%s/natural_frequency should be positive",name.c_str());
+      return false;
+    }
+  }
+  else if (nh.hasParam(name+"/frequency"))
+  {
+    double frequency;
+    if (!nh.getParam(name+"/frequency",frequency))
+    {
+      ROS_ERROR("%s/frequency is not a double",name.c_str());
+      return false;
+    }
+    if (frequency<0)
+    {
+      ROS_ERROR("%s/frequency should be positive",name.c_str());
+      return false;
+    }
+    natural_frequency=2*M_PI*frequency;
+  }
+  else 
+  {
+    ROS_ERROR("Neither %s/natural_frequency nor %s/frequency are defined",name.c_str(),name.c_str());
+    return false;
+  }
+  
+  if (nh.hasParam(name+"/sample_period"))
+  {
+    if (!nh.getParam(name+"/sample_period",sampling_period))
+    {
+      ROS_ERROR("%s/sample_period is not a double",name.c_str());
+      return false;
+    }
+    if (sampling_period<0)
+    {
+      ROS_ERROR("%s/sample_period should be positive",name.c_str());
+      return false;
+    }
+  }
+  else 
+  {
+    ROS_ERROR("%s/sample_period is not defined",name.c_str());
+    return false;
+  }
+
+  if (nh.hasParam(name+"/channels"))
+  {
+    if (!nh.getParam(name+"/channels",channels))
+    {
+      ROS_ERROR("%s/channels is not an int",name.c_str());
+      return false;
+    }
+    if((channels<-1)||(channels==0))
+    {
+      ROS_ERROR("%s/channles should be -1, if to be allocated dynamically through the code, or >=1",name.c_str());
+      return false;
+    }
+  }
+  else 
+  {
+    channels = -1;
+  }
+  
+  return true;
+}
+
+
+
+template<int N, int MaxN>
+inline bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name, FirstOrderLowPass<N, MaxN>& filter)
+{
+  double natural_frequency;
+  double sampling_period;
+  int channels;
+
+  if(!eigen_control_toolbox::importMatricesFromParam(nh, name, natural_frequency, sampling_period, channels))
+  {
+    return false;
+  }
+  
+  if(!fitler->init(natural_frequency, sampling_period, channels))
+  {
+    return false;
+  }
+  
+  return filter->computeMatrices( );
+}
+
+
+template<int N, int MaxN>
+inline bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name, FirstOrderHighPass<N, MaxN>& filter)
+{
+  double natural_frequency;
+  double sampling_period;
+  int channels;
+
+  if(!eigen_control_toolbox::importMatricesFromParam(nh, name, natural_frequency, sampling_period, channels))
+  {
+    return false;
+  }
+  if(!filter->init(natural_frequency, sampling_period, channels))
+  {
+    return false;
+  }
+
+  return filter->computeMatrices( );
+}
+
+}
+
 }
 
 #endif // ROS_PARAMS_H

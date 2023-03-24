@@ -3,9 +3,9 @@
 import pandas as pd
 import plotly.express as px
 
-t1 = pd.read_csv('/home/feymann/.ros/test1.plt')
-t3 = pd.read_csv('/home/feymann/.ros/test3.plt')
-tX = pd.read_csv('/home/feymann/.ros/testX.plt')
+t1 = pd.read_csv('/tmp/test1.plt')
+t3 = pd.read_csv('/tmp/test3.plt')
+tX = pd.read_csv('/tmp/testX.plt')
 
 # ofile << u << ", "  << lpf.getState() << ", " << lpf.getInput() << ","  << (lpf.getOutput()-u) << std::endl;
 figX = px.line(tX, y = ['u1','u2','u3','y1','y2','y3'], title='Test Filters (testX) ')

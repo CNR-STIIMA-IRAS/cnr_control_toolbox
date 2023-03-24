@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <gtest/gtest-death-test.h>
 
-#include <ros/ros.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_systems/discrete_state_space_systems.h>
 #include <state_space_systems/continuous_state_space_systems.h>
@@ -13,7 +12,6 @@
 #include <state_space_systems/integral_discrete_state_space_systems.h>
 //#include <state_space_ros/ros_params.h>
 
-ros::NodeHandle* nh;
 constexpr unsigned int order=10; // system order
 constexpr unsigned int nin=1;    // number of inputs
 constexpr unsigned int nout=1;   // number of outputs
@@ -120,10 +118,6 @@ TEST(TestSuite, TestDiscreteStateSpaceDynamicButOne)
 int main(int argc,char* argv[])
 {
   // ------ Init ROS ------
-  ros::init(argc,argv,"test_filters");
-  
-  nh = new ros::NodeHandle("~");
-
   srand((unsigned int) time(0));
 
   testing::InitGoogleTest(&argc, argv);

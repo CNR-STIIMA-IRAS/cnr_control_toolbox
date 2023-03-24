@@ -6,7 +6,6 @@
 
   <maintainer email="manuel.beschi@itia.cnr.it">Manuel Beschi</maintainer>
 
-
   <license>BSD</license>
 
   <url type="website">http://XXXXXXXXXXXXXXXXXXXX/state_space_systems</url>
@@ -15,23 +14,13 @@
   <author email="stefano.ghidini@itia.cnr.it">Stefano Ghidini</author>
   <author email="enrico.villagrossi@itia.cnr.it">Enrico Villagrossi (former author)</author>
 
+  <buildtool_depend>cmake</buildtool_depend>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>eigen</build_depend>
-  <build_depend>rostest</build_depend>
-  <build_depend>roscpp</build_depend>
+  
   <build_depend>eigen_matrix_utils</build_depend>
-  <build_depend>rosparam_utilities</build_depend>
-
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rosparam_utilities</build_export_depend>
-
-  <exec_depend>roscpp</exec_depend>
   <exec_depend>eigen_matrix_utils</exec_depend>
-  <exec_depend>rostest</exec_depend>
-  <exec_depend>rosparam_utilities</exec_depend>
-
-  <test_depend>curl</test_depend>
-
+  
   <export>
     <rosdoc config="rosdoc.yaml" />
   </export>

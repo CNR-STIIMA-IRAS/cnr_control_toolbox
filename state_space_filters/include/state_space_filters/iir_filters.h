@@ -4,19 +4,12 @@
 #include <type_traits>
 #include <memory>
 #include <Eigen/Core>
-#include <ros/node_handle.h>
 #include <state_space_systems/symbols.h>
 #include <state_space_systems/discrete_state_space_systems.h>
 
 namespace eigen_control_toolbox
 {
 
-
-bool importMatricesFromParam( const ros::NodeHandle& nh, 
-                              const std::string& name, 
-                              double& natural_frequency,
-                              double& sampling_period,
-                              int&    channels);
 /*
  *     FirstOrderLowPass( const double& natural_frequency,
  *                        const double& sampling_period);
@@ -51,9 +44,6 @@ public:
   FirstOrderLowPass(const double& natural_frequency, const double& sampling_period);
 
   bool init(const double& natural_frequency, const double& sampling_period, const int& channels);
-
-  [[deprecated("Use the Ctor, o the function 'init'. The dependency from ROS will be removed in the future")]]
-  virtual bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name);
 
   double getNaturalFrequency()const {return m_natural_frequency;}
   double getChannels() const {return m_channels;}
@@ -102,9 +92,6 @@ public:
   FirstOrderHighPass(const double& natural_frequency, const double& sampling_period, const int& channels = N);
   
   virtual bool init(const double& natural_frequency, const double& sampling_period, const int& channels = N);
-
-  [[deprecated("Use the Ctor, o the function 'init'. The dependency from ROS will be removed in the future")]]
-  virtual bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name);
 
   double getNaturalFrequency(){return m_natural_frequency;};
 

@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <ros/node_handle.h>
+#include <state_space_filters/iir_filters.h>
 #include <state_space_systems/discrete_state_space_systems.h>
 #include <state_space_systems/integral_state_space_systems.h>
 #include <state_space_systems/integral_discrete_state_space_systems.h>
@@ -64,6 +65,23 @@ bool setMatricesFromParam(Controller<N,MaxN>& out,
                           const ros::NodeHandle& nh,
                           const std::string& name,
                           std::string& what);
+
+
+
+bool importMatricesFromParam(const ros::NodeHandle& nh, 
+                              const std::string& name, 
+                              double& natural_frequency,
+                              double& sampling_period,
+                              int&    channels);
+
+template<int N, int MaxN=N>
+bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name, FirstOrderLowPass<N, MaxN>& filter);
+
+
+template<int N, int MaxN>
+bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string& name, FirstOrderHighPass<N, MaxN>& filter);
+
+
 }
 
 

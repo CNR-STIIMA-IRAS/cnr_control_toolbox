@@ -5,8 +5,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <ros/ros.h>
-
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_filters/common_filters.h>
 #include <gtest/gtest.h>
