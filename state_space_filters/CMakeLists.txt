@@ -106,36 +106,36 @@ if(NOT USE_ROS1)
   
   install(
     TARGETS ${PROJECT_NAME}
-    EXPORT export_state_space_systems
+    EXPORT export_state_space_filters
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
 
   # export targets
-  set(export_targets ${export_targets};state_space_systems_utilities)
-  set(export_targets ${export_targets};state_space_systems_server)
-  export(EXPORT export_state_space_systems
-    FILE "${PROJECT_BINARY_DIR}/export_state_space_systems.cmake")
+  set(export_targets ${export_targets};state_space_filters_utilities)
+  set(export_targets ${export_targets};state_space_filters_server)
+  export(EXPORT export_state_space_filters
+    FILE "${PROJECT_BINARY_DIR}/export_state_space_filters.cmake")
 
-  # Create the state_space_systemsConfig.cmake
+  # Create the state_space_filtersConfig.cmake
   set(CONF_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
-  configure_file(state_space_systemsConfig.cmake.in
-    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_systemsConfig.cmake" @ONLY)
+  configure_file(state_space_filtersConfig.cmake.in
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_filtersConfig.cmake" @ONLY)
 
-  # Create the state_space_systemsConfigVersion.cmake
-  configure_file(state_space_systemsConfigVersion.cmake.in
-    "${PROJECT_BINARY_DIR}/state_space_systemsConfigVersion.cmake" @ONLY)
+  # Create the state_space_filtersConfigVersion.cmake
+  configure_file(state_space_filtersConfigVersion.cmake.in
+    "${PROJECT_BINARY_DIR}/state_space_filtersConfigVersion.cmake" @ONLY)
   
   install(FILES
-    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_systemsConfig.cmake"
-    "${PROJECT_BINARY_DIR}/state_space_systemsConfigVersion.cmake"
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/state_space_filtersConfig.cmake"
+    "${PROJECT_BINARY_DIR}/state_space_filtersConfigVersion.cmake"
     DESTINATION "share/${PROJECT_NAME}/cmake" COMPONENT dev
   )
 
-  install(EXPORT export_state_space_systems
+  install(EXPORT export_state_space_filters
     DESTINATION "share/${PROJECT_NAME}/cmake"
-    FILE export_state_space_systems.cmake
+    FILE export_state_space_filters.cmake
     COMPONENT dev
   )
 endif()
