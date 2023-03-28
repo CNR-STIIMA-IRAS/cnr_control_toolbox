@@ -10,7 +10,5 @@ set(kinematics_filters_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 include("${kinematics_filters_DIR}/export_kinematics_filters.cmake")
 
 # These are IMPORTED targets created by kinematics_filtersTargets.cmake
-set(kinematics_filters_LIBRARIES kinematics_filters_utilities)
-
-set(kinematics_filters_EXECUTABLE kinematics_filters_server)
+set(kinematics_filters_LIBRARIES kinematics_filters)
 

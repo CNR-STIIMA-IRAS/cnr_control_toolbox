@@ -10,12 +10,16 @@
   <author email="nicola.pedrocchi@stiima.cnr.it">Nicola Pedrocchi</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depnd>cmake</buildtool_depend>
+
   <build_depend>eigen_matrix_utils</build_depend>
   <build_depend>state_space_systems</build_depend>
   <build_depend>eigen</build_depend>
+ 
   <build_export_depend>eigen_matrix_utils</build_export_depend>
   <build_export_depend>state_space_systems</build_export_depend>
-  <exec_depend>eigen_matrix_utils</exec_depend>
+  
+<exec_depend>eigen_matrix_utils</exec_depend>
   <exec_depend>state_space_systems</exec_depend>
 
   <test_depend>curl</test_depend>

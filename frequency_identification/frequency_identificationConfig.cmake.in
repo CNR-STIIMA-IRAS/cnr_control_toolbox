@@ -10,7 +10,6 @@ set(frequency_identification_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 include("${frequency_identification_DIR}/export_frequency_identification.cmake")
 
 # These are IMPORTED targets created by frequency_identificationTargets.cmake
-set(frequency_identification_LIBRARIES frequency_identification_utilities)
+set(frequency_identification_LIBRARIES frequency_identification)
 
-set(frequency_identification_EXECUTABLE frequency_identification_server)
 

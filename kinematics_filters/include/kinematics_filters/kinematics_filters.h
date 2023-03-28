@@ -9,7 +9,8 @@ namespace cnr_control_toolbox
 {
 
 /**
- * @brief  * @tparam D1 The template has 3 arguments to manage also different kind of inputs (a colum of a matrix, a row of a matrix, a vector etc).
+ * @brief  * 
+ * @tparam D1 The template has 3 arguments to manage also different kind of inputs (a colum of a matrix, a row of a matrix, a vector etc).
  *            The user usually has not to explicit the template params, since they are aumatically recognized.
  * @tparam D2 see D2
  * @tparam D3 see D1

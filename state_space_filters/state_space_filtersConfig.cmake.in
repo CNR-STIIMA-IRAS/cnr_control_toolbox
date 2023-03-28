@@ -10,7 +10,5 @@ set(state_space_filters_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 include("${state_space_filters_DIR}/export_state_space_filters.cmake")
 
 # These are IMPORTED targets created by state_space_filtersTargets.cmake
-set(state_space_filters_LIBRARIES state_space_filters_utilities)
-
-set(state_space_filters_EXECUTABLE state_space_filters_server)
+set(state_space_filters_LIBRARIES state_space_filters)
 

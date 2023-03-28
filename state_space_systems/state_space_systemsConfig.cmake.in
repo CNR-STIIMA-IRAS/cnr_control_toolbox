@@ -10,7 +10,5 @@ set(state_space_systems_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 include("${state_space_systems_DIR}/export_state_space_systems.cmake")
 
 # These are IMPORTED targets created by state_space_systemsTargets.cmake
-set(state_space_systems_LIBRARIES state_space_systems_utilities)
-
-set(state_space_systems_EXECUTABLE state_space_systems_server)
+set(state_space_systems_LIBRARIES state_space_systems)
 
