@@ -45,7 +45,7 @@ else()
   find_package(state_space_systems REQUIRED )
 endif()
 
-cnr_install_directories(USE_ROS1 
+cnr_install_directories(USE_ROS1
   CNR_INSTALL_INCLUDE_DIR CNR_INSTALL_LIB_DIR CNR_INSTALL_BIN_DIR CNR_INSTALL_SHARE_DIR)
 cnr_enable_testing(ENABLE_TESTING ENABLE_COVERAGE USE_ROS1)
 #############################
@@ -103,7 +103,7 @@ endif()
 ## CMAKE CONFIG (IF NOT CATKIN) ##
 ##################################
 if(NOT USE_ROS1)
-  
+
   install(
     TARGETS ${PROJECT_NAME}
     EXPORT export_state_space_filters
