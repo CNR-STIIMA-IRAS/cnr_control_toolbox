@@ -73,8 +73,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${INSTALL_INTERFACE_INCLUDE_DIRS}>")
 
 if(BUILD_EXAMPLE)
-  add_executable(${PROJECT_NAME}_test src/frequency_identification_test.cpp)
-  target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+  if(USE_ROS1)
+    add_executable(${PROJECT_NAME}_test src/frequency_identification_test.cpp)
+    target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+  endif()
 endif()
 #################
 ## END - Build ##
@@ -119,8 +121,7 @@ if(NOT USE_ROS1)
   )
 
   # export targets
-  set(export_targets ${export_targets};frequency_identification_utilities)
-  set(export_targets ${export_targets};frequency_identification_server)
+  set(export_targets ${export_targets};frequency_identification)
   export(EXPORT export_frequency_identification
     FILE "${PROJECT_BINARY_DIR}/export_frequency_identification.cmake")
 

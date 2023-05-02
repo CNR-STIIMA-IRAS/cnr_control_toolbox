@@ -113,8 +113,7 @@ if(NOT USE_ROS1)
   )
 
   # export targets
-  set(export_targets ${export_targets};state_space_filters_utilities)
-  set(export_targets ${export_targets};state_space_filters_server)
+  set(export_targets ${export_targets};state_space_filters)
   export(EXPORT export_state_space_filters
     FILE "${PROJECT_BINARY_DIR}/export_state_space_filters.cmake")
 

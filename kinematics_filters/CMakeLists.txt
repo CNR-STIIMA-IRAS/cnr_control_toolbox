@@ -118,8 +118,7 @@ if(NOT USE_ROS1)
   )
 
   # export targets
-  set(export_targets ${export_targets};kinematics_filters_utilities)
-  set(export_targets ${export_targets};kinematics_filters_server)
+  set(export_targets ${export_targets};kinematics_filters)
   export(EXPORT export_kinematics_filters
     FILE "${PROJECT_BINARY_DIR}/export_kinematics_filters.cmake")
 
