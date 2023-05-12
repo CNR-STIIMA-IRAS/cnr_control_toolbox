@@ -112,8 +112,7 @@ if(NOT USE_ROS1)
   )
 
   # export targets
-  set(export_targets ${export_targets};state_space_systems_utilities)
-  set(export_targets ${export_targets};state_space_systems_server)
+  set(export_targets ${export_targets};state_space_systems)
   export(EXPORT export_state_space_systems
     FILE "${PROJECT_BINARY_DIR}/export_state_space_systems.cmake")
 
