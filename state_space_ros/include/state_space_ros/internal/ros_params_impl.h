@@ -607,7 +607,7 @@ inline bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string
     return false;
   }
   
-  if(!fitler->init(natural_frequency, sampling_period, channels))
+  if(!filter->init(natural_frequency, sampling_period, channels))
   {
     return false;
   }
@@ -637,6 +637,6 @@ inline bool importMatricesFromParam(const ros::NodeHandle& nh, const std::string
 
 }
 
-}
+
 
 #endif // ROS_PARAMS_H
