@@ -39,6 +39,21 @@ target_link_libraries(${PROJECT_NAME}_test
  ${catkin_LIBRARIES}
 )
 
+
+add_executable(${PROJECT_NAME}_node src/frequency_identification_node.cpp)
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_node
+ ${PROJECT_NAME}
+ ${catkin_LIBRARIES}
+)
+
+add_executable(${PROJECT_NAME}_sweep src/sweep_node.cpp)
+add_dependencies(${PROJECT_NAME}_sweep ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_sweep
+ ${PROJECT_NAME}
+ ${catkin_LIBRARIES}
+)
+
 # catkin_install_python(PROGRAMS
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

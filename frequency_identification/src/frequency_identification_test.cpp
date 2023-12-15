@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
 
   ros::Publisher js_pub=pnh.advertise<sensor_msgs::JointState>("js",1);
 
+
   identification::MultiSineEstimator mse(pnh);
 
   double dt=0.001;
@@ -23,6 +24,7 @@ int main(int argc, char* argv[])
   js_msg.velocity.resize(1);
   js_msg.effort.resize(1);
   js_msg.name.resize(1);
+
   mse.initTest(dt);
   while (ros::ok())
   {

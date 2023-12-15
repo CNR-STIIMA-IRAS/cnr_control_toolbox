@@ -156,6 +156,11 @@ bool MultiSineEstimator::loadParam()
     CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"input/max_acc' does not exist");
   }
 
+  if (m_carrier_amplitude>=m_max_pos)
+  {
+    CNR_RETURN_FALSE(m_logger,"The param '"+m_nh.getNamespace()+"carrier/amplitude' should be smaller than input/max_pos");
+  }
+
 
   if(!m_nh.getParam("rampup_time", m_rampup_time))
   {
@@ -166,11 +171,18 @@ bool MultiSineEstimator::loadParam()
   CNR_RETURN_BOOL(m_logger,true);
 }
 
-void MultiSineEstimator::getCommand(const double& t, double& x, double& dx, double& ddx)
+void MultiSineEstimator::getCommand(const double& t, double& x, double& dx, double& ddx,const bool& add_carrier)
 {
-  x   = 0.0;
-  dx  = 0.0;
-  ddx = 0.0;
+  if (add_carrier)
+  {
+    x   = m_carrier_amplitude*std::sin(m_carrier_frequency*t);
+    dx  = m_carrier_frequency*m_carrier_amplitude*std::cos(m_carrier_frequency*t);
+    ddx = -m_carrier_frequency*m_carrier_frequency*m_carrier_amplitude*std::sin(m_carrier_frequency*t);
+  }
+  else
+  {
+    x=dx=ddx=0.0;
+  }
 
   std::complex<double> i(0.0,1.0);
   for (const std::pair<double,std::complex<double>>& p: m_spetrum_command)
@@ -278,7 +290,7 @@ state MultiSineEstimator::execute(const double& dt, const double& y, double& x, 
   if (m_state==state::Running)
   {
     setOutput(y,m_time,dt);
-    getCommand(m_time,x,dx,ddx);
+    getCommand(m_time,x,dx,ddx,true);
     m_time+=dt;
   }
   else if (m_state==state::Complete)
@@ -321,17 +333,40 @@ void MultiSineEstimator::generateCommandSignal(const double& dt)
     max_dx  =  dx> max_dx?  dx:  max_dx;
     max_ddx = ddx>max_ddx? ddx: max_ddx;
   }
-  double scale=1.0;
-  scale = m_max_pos/max_x   < scale ? m_max_pos/max_x   : scale;
+  double scale=(m_max_pos-m_carrier_amplitude)/max_x/*1.0*/;
+  scale = (m_max_pos-m_carrier_amplitude)/max_x   < scale ? (m_max_pos-m_carrier_amplitude)/max_x   : scale;
   scale = m_max_vel/max_dx  < scale ? m_max_vel/max_dx  : scale;
   scale = m_max_acc/max_ddx < scale ? m_max_acc/max_ddx : scale;
 
   for (int idx=0;idx<m_harmonics_number;idx++)
   {
     double freq=tmp.at(idx)*m_carrier_frequency;
-    std::complex<double> c=m_spetrum_command.at(freq);
-    m_spetrum_command.at(freq) = c*scale;
+//    std::complex<double> c=m_spetrum_command.at(freq);
+//    m_spetrum_command.at(freq) = c*scale;
+
+    std::complex<double> c(scale*m_spetrum_command.at(freq).real(),
+                           scale*m_spetrum_command.at(freq).imag());
+    m_spetrum_command.at(freq) = c;
   }
+
+  max_x   = 0.0;
+  max_dx  = 0.0;
+  max_ddx = 0.0;
+
+  for (double t=0;t<getExperimentTime();t+=dt)
+  {
+    double x,dx,ddx;
+    getCommand(t,x,dx,ddx);
+    x   = std::abs(  x);
+    dx  = std::abs( dx);
+    ddx = std::abs(ddx);
+
+    max_x   =   x>  max_x?   x:   max_x;
+    max_dx  =  dx> max_dx?  dx:  max_dx;
+    max_ddx = ddx>max_ddx? ddx: max_ddx;
+  }
+  ROS_INFO("max x=%f dx=%f ddx=%f",max_x,max_dx,max_ddx);
+
 }
 
 void MultiSineEstimator::computeFreqResp()

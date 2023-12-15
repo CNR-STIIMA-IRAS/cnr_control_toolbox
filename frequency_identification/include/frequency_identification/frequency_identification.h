@@ -76,6 +76,9 @@ protected:
   int    m_harmonics_number;
   state m_state;
 
+  /**
+   * @brief m_gen_thread
+   */
   std::thread m_gen_thread;
 
   std::map<double,std::complex<double>> m_spetrum_command;
@@ -87,9 +90,13 @@ protected:
   void generateCommandSignal(const double &dt);
   void computeFreqResp();
   std::complex<double> computeFourierCoefficient(const double& freq);
-  void getCommand(const double& t, double& x, double& dx, double& ddx);
+  void getCommand(const double& t, double& x, double& dx, double& ddx, const bool& add_carrier=false);
   void setOutput(const double& y, const double &t, const double &dt);
 
+  /**
+   * @brief generatingSignalThread
+   * @param dt
+   */
   void generatingSignalThread(const double &dt);
 };
 
