@@ -28,6 +28,9 @@ target_link_libraries(test_controllers
 
 target_compile_options(test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
 gtest_discover_tests(test_controllers)
+add_test(NAME test_controllers
+  COMMAND test_controllers)
+
 
 if(ENABLE_COVERAGE_TESTING)
   set(COVERAGE_EXCLUDES "*/state_space_controllers/test*")
@@ -47,7 +50,7 @@ install(DIRECTORY include/state_space_controllers
   DESTINATION include)
 
 install(
-  TARGETS state_space_controllers
+  TARGETS state_space_controllers test_controllers
   EXPORT state_space_controllersTargets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -60,29 +63,4 @@ install(EXPORT state_space_controllersTargets
   NAMESPACE state_space_controllers::
   FILE state_space_controllersTargets.cmake
 )
-
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  find_package(roscpp REQUIRED)
-
-  include_directories(${rostest_INCLUDE_DIRS} ${roscpp_INCLUDE_DIRS})
-  add_rostest_gtest(test_controllers test/test_controllers.launch test/test_pid.cpp)
-  add_dependencies(test_controllers ${catkin_EXPORTED_TARGETS})
-  target_link_libraries(test_controllers ${catkin_LIBRARIES} ${rostest_LIBRARIES} ${state_space_ros_LIBRARIES} ${roscpp_LIBRARIES})
-  target_compile_options(test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
-
-#  if(ENABLE_COVERAGE_TESTING)
-#    set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
-#    add_code_coverage(
-#      NAME coverage_report
-#      DEPENDENCIES test_controllers
-#    )
-#  endif()
-endif()
 

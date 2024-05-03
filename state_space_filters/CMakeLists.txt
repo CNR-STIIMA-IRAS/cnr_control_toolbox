@@ -28,6 +28,9 @@ target_link_libraries(filtered_values_test
 )
 target_compile_options(filtered_values_test PUBLIC $<$<CONFIG:Release>:-Ofast >)
 gtest_discover_tests(filtered_values_test)
+add_test(NAME filtered_values_test
+  COMMAND filtered_values_test)
+
 
 add_executable(test_filters test/test_filters.launch test/test_filters.cpp)
 target_link_libraries(test_filters
@@ -37,6 +40,9 @@ target_link_libraries(test_filters
 )
 target_compile_options(test_filters PUBLIC $<$<CONFIG:Release>:-Ofast >)
 gtest_discover_tests(test_filters)
+add_test(NAME test_filters
+  COMMAND test_filters)
+
 
 if(ENABLE_COVERAGE_TESTING)
   set(COVERAGE_EXCLUDES "*/state_space_filters/test*")
@@ -45,4 +51,30 @@ if(ENABLE_COVERAGE_TESTING)
     DEPENDENCIES filtered_values_test test_filters
   )
 endif()
+
+
+
+#############
+## Install ##
+#############
+
+# Mark cpp header files for installation
+install(DIRECTORY include/state_space_filters
+  DESTINATION include)
+
+install(
+  TARGETS state_space_filters test_filters filtered_values_test
+  EXPORT state_space_filtersTargets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+
+install(EXPORT state_space_filtersTargets
+  DESTINATION "share/state_space_controllers/cmake"
+  NAMESPACE state_space_filters::
+  FILE state_space_filtersTargets.cmake
+)
+
 

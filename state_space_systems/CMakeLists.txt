@@ -3,13 +3,12 @@ add_library(state_space_systems INTERFACE)
 target_include_directories(state_space_systems
   INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include> # if INSTALL_INTERFACE, add header from install path
+    $<INSTALL_INTERFACE:include>
   )
 
 target_link_libraries(state_space_systems
   INTERFACE
   eigen_matrix_utils::eigen_matrix_utils
-#  cnr_param::cnr_param
 )
 
 add_library(state_space_systems::state_space_systems ALIAS state_space_systems)
@@ -34,6 +33,9 @@ target_link_libraries(test_state_space_matrix
 
 target_compile_options(test_state_space_matrix PUBLIC $<$<CONFIG:Release>:-Ofast >)
 gtest_discover_tests(test_state_space_matrix)
+add_test(NAME test_state_space_matrix
+  COMMAND test_state_space_matrix)
+
 
 if(ENABLE_COVERAGE_TESTING)
   set(COVERAGE_EXCLUDES "*/state_space_systems/test*")
@@ -48,7 +50,6 @@ endif()
 #############
 ## Install ##
 #############
-# Install
 install(DIRECTORY include/state_space_systems
   DESTINATION include)
 

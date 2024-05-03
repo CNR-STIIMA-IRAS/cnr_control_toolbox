@@ -30,7 +30,7 @@ install(DIRECTORY include/kinematics_filters
   DESTINATION include)
 
 install(
-  TARGETS kinematics_filters #node_connection_test kdtree_test
+  TARGETS kinematics_filters
   EXPORT kinematics_filtersTargets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
