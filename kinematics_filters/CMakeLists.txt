@@ -43,4 +43,3 @@ install(EXPORT kinematics_filtersTargets
   NAMESPACE kinematics_filters::
   FILE kinematics_filtersTargets.cmake
 )
-

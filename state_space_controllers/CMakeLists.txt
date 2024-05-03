@@ -49,18 +49,9 @@ endif()
 install(DIRECTORY include/state_space_controllers
   DESTINATION include)
 
-install(
-  TARGETS state_space_controllers test_controllers
-  EXPORT state_space_controllersTargets
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
 
 install(EXPORT state_space_controllersTargets
   DESTINATION "share/cnr_control_toolbox/cmake"
   NAMESPACE state_space_controllers::
   FILE state_space_controllersTargets.cmake
 )
-

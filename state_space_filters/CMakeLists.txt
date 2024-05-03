@@ -76,5 +76,3 @@ install(EXPORT state_space_filtersTargets
   NAMESPACE state_space_filters::
   FILE state_space_filtersTargets.cmake
 )
-
-

@@ -23,9 +23,9 @@ add_library(state_space_systems::state_space_systems ALIAS state_space_systems)
 #############
 
 add_executable(test_state_space_matrix
-  test/test_state_space_matrix.cpp)
+  test/test_state_space_matrix.cpp )
 target_link_libraries(test_state_space_matrix
-  PUBLIC
+  PRIVATE
   state_space_systems::state_space_systems
    GTest::gtest_main
 )
@@ -66,5 +66,3 @@ install(EXPORT state_space_systemsTargets
   NAMESPACE state_space_systems::
   FILE state_space_systemsTargets.cmake
 )
-
-

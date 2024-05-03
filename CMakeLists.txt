@@ -22,7 +22,6 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 include(CTest)
 
-
 add_subdirectory(eigen_matrix_utils)
 add_subdirectory(state_space_systems)
 add_subdirectory(kinematics_filters)
@@ -40,6 +39,10 @@ install(FILES
   ${CMAKE_SOURCE_DIR}/cmake_config/cnr_control_toolboxConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/cnr_control_toolboxConfigVersion.cmake
   DESTINATION "share/cnr_control_toolbox/cmake")
+
+
+
+
 
 # make uninstall
 add_custom_target("uninstall" COMMENT "Uninstall installed files")
