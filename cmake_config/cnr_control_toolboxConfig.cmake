@@ -1,8 +1,9 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(Eigen3 REQUIRED COMPONENTS core)
-find_dependency(Boost REQUIRED COMPONENTS date_time filesystem)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(YAML_CPP REQUIRED yaml-cpp IMPORTED_TARGET)
 
-include("${CMAKE_CURRENT_LIST_DIR}/cnr_control_toolboxTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/eigen_matrix_utilsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/state_space_systemsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/state_space_filtersTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/state_space_controllersTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/kinematics_filtersTargets.cmake")

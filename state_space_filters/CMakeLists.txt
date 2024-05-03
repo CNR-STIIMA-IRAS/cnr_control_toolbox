@@ -72,7 +72,7 @@ install(
 
 
 install(EXPORT state_space_filtersTargets
-  DESTINATION "share/state_space_controllers/cmake"
+  DESTINATION "share/cnr_control_toolbox/cmake"
   NAMESPACE state_space_filters::
   FILE state_space_filtersTargets.cmake
 )

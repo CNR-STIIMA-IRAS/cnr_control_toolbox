@@ -62,7 +62,7 @@ install(
 )
 
 install(EXPORT state_space_systemsTargets
-  DESTINATION "share/state_space_systems/cmake"
+  DESTINATION "share/cnr_control_toolbox/cmake"
   NAMESPACE state_space_systems::
   FILE state_space_systemsTargets.cmake
 )

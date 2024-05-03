@@ -39,7 +39,7 @@ install(
 
 
 install(EXPORT kinematics_filtersTargets
-  DESTINATION "share/kinematics_filters/cmake"
+  DESTINATION "share/cnr_control_toolbox/cmake"
   NAMESPACE kinematics_filters::
   FILE kinematics_filtersTargets.cmake
 )

@@ -36,7 +36,7 @@ install(
 )
 
 install(EXPORT eigen_matrix_utilsTargets
-  DESTINATION "share/eigen_matrix_utils/cmake"
+  DESTINATION "share/cnr_control_toolbox/cmake"
   NAMESPACE eigen_matrix_utils::
   FILE eigen_matrix_utilsTargets.cmake
 )
