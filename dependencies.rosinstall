@@ -1,12 +1,3 @@
 - git:
     local-name: code_coverage
     uri: https://github.com/mikeferguson/code_coverage.git
-- git:
-    local-name: rosparam_utilities
-    uri: https://github.com/CNR-STIIMA-IRAS/rosparam_utilities
-- git:
-    local-name: eigen_utils
-    uri: https://github.com/CNR-STIIMA-IRAS/eigen_utils
-- git:
-    local-name: cnr_logger
-    uri: https://github.com/CNR-STIIMA-IRAS/cnr_logger

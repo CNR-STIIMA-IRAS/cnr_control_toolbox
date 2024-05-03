@@ -5,9 +5,12 @@ cmake_minimum_required(VERSION 3.16.0)
 project(cnr_control_toolbox)
 
 option(BUILD_EXAMPLES ON)
+option(ENABLE_TESTING           "ENABLE TESTING" OFF)
+option(ENABLE_COVERAGE_TESTING  "ENABLE COVERAGE TESTING" OFF)
+option(COMPILE_EXAMPLE          "COMPILE THE EXAMPLE" OFF)
 
+find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
 
-find_package(eigen_matrix_utils REQUIRED)
 
 # Add gtest based cpp test target and link libraries
 if(ENABLE_COVERAGE_TESTING)
@@ -18,6 +21,7 @@ endif()
 find_package(GTest REQUIRED)
 include(GoogleTest)
 
+add_subdirectory(eigen_matrix_utils)
 add_subdirectory(state_space_systems)
 add_subdirectory(kinematics_filters)
 add_subdirectory(state_space_controllers)

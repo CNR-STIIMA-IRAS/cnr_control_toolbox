@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>eigen_matrix_utils</name>
+  <version>0.0.0</version>
+  <description>The eigen_matrix_utils package</description>
+
+  <maintainer email="manuel.beschi@itia.cnr.it">Manuel Beschi</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+  
+  <build_depend>eigen</build_depend>
+  
+  <export>
+  </export>
+</package>
