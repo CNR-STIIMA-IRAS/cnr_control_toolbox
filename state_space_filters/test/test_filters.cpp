@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <ros/ros.h>
 
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <state_space_filters/common_filters.h>
@@ -50,11 +49,10 @@ TEST(TestSuite, FirstOrderLowPassX)
   int ch;
   EXPECT_NO_FATAL_FAILURE( ch = lpf.getChannels()        );
   Eigen::VectorXd u(ch); u.setRandom();
-  Eigen::VectorXd y(ch); y.setRandom();
-  EXPECT_TRUE( lpf.setStateFromLastIO(u,  y) );
+  EXPECT_TRUE( lpf.setStateFromLastInput(u) );
   EXPECT_TRUE( eigen_utils::norm(lpf.u()  - u) < 1e-12 ) << "get: " + std::to_string(eigen_utils::norm(lpf.u()));  
-  EXPECT_TRUE( eigen_utils::norm(lpf.y() - y) < 1e-12 ) << "get: " + std::to_string(eigen_utils::norm(lpf.y()));  
-  EXPECT_NO_FATAL_FAILURE( y=lpf.update(u) );
+  EXPECT_TRUE( eigen_utils::norm(lpf.y() - u) < 1e-12 ) << "get: " + std::to_string(eigen_utils::norm(lpf.y()));
+  EXPECT_NO_FATAL_FAILURE( u=lpf.update(u) );
 }
 
 
@@ -69,7 +67,7 @@ TEST(TestSuite, FirstOrderLowPassXPerformance)
     int ch = lpf.getChannels();
     Eigen::VectorXd u(ch); u.setRandom();
     Eigen::VectorXd y(ch); y.setRandom();
-    lpf.setStateFromLastIO(u,  y);
+    lpf.setStateFromLastInput(u);
     
     auto start = std::chrono::high_resolution_clock::now();
     for (unsigned int i=0;i<stress_cycles ;i++)
@@ -94,7 +92,7 @@ TEST(TestSuite, FirstOrderLowPassXPtrPerformance)
     int ch = lpf->getChannels();
     Eigen::VectorXd u(ch); u.setRandom();
     Eigen::VectorXd y(ch); y.setRandom();
-    lpf->setStateFromLastIO(u,  y);
+    lpf->setStateFromLastInput(u);
     
     auto start = std::chrono::high_resolution_clock::now();
     for (unsigned int i=0;i<stress_cycles ;i++)
@@ -118,7 +116,7 @@ TEST(TestSuite, FirstOrderLowPassXPlot)
   int ch = lpf.getChannels();
   Eigen::VectorXd u(ch); u.setRandom();
   Eigen::VectorXd y(ch); y.setRandom();
-  lpf.setStateFromLastIO(u,  y);
+  lpf.setStateFromLastInput(u);
 
   std::ofstream ofile("testX.plt", std::ofstream::out);
   ofile << "u1,u2,u3," 
@@ -175,7 +173,7 @@ TEST(TestSuite, FirstOrderLowPass6Performance)
   Eigen::VectorXd u(ch); u.setZero();
   Eigen::VectorXd y(ch); y.setZero();
 
-  lpf.setStateFromLastIO(u,  y);
+  lpf.setStateFromLastInput(u);
   u(0) = 1.0;
   auto start = std::chrono::high_resolution_clock::now();
   for (unsigned int i=0;i<stress_cycles ;i++)
@@ -197,7 +195,7 @@ TEST(TestSuite, FirstOrderLowPass6PtrPerformance)
   Eigen::VectorXd u(ch); u.setZero();
   Eigen::VectorXd y(ch); y.setZero();
 
-  lpf->setStateFromLastIO(u,  y);
+  lpf->setStateFromLastInput(u);
   u(0) = 1.0;
   auto start = std::chrono::high_resolution_clock::now();
   for (unsigned int i=0;i<stress_cycles ;i++)
@@ -217,7 +215,7 @@ TEST(TestSuite, FirstOrderLowPass6Plot)
   int ch = lpf.getChannels();
   Eigen::VectorXd u(ch); u.setRandom();
   Eigen::VectorXd y(ch); y.setRandom();
-  lpf.setStateFromLastIO(u,  y);
+  lpf.setStateFromLastInput(u);
 
   std::ofstream ofile("test3.plt", std::ofstream::out);
   ofile << "u1,u2,u3,u4,u5,u6," 
@@ -270,12 +268,12 @@ TEST(TestSuite, FirstOrderLowPass1Performance)
   double u = 0.67;
   double y = 0.34;
 
-  lpfa.setStateFromLastIO(u,  y);
-  lpfb.setStateFromLastIO(u,  y);
-  lpfc.setStateFromLastIO(u,  y);
-  lpfd.setStateFromLastIO(u,  y);
-  lpfe.setStateFromLastIO(u,  y);
-  lpff.setStateFromLastIO(u,  y);
+  lpfa.setStateFromLastInput(u);
+  lpfb.setStateFromLastInput(u);
+  lpfc.setStateFromLastInput(u);
+  lpfd.setStateFromLastInput(u);
+  lpfe.setStateFromLastInput(u);
+  lpff.setStateFromLastInput(u);
   u = 1.0;
   auto start = std::chrono::high_resolution_clock::now();
   for (unsigned int i=0;i<stress_cycles ;i++)
@@ -306,7 +304,7 @@ TEST(TestSuite, FirstOrderLowPass1Plot)
   double u = 0.67;
   double y = 0.34;
 
-  lpf.setStateFromLastIO(u,  y);
+  lpf.setStateFromLastInput(u);
   std::ofstream ofile("test1.plt", std::ofstream::out);
   ofile << u << ", " 
         << lpf.x() << ", " 

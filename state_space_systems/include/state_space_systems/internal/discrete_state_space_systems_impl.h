@@ -3,7 +3,6 @@
 #ifndef   state_space_systems_discrete_state_space_systems_impl_h
 #define   state_space_systems_discrete_state_space_systems_impl_h
 
-//#include <rosparam_utilities/rosparam_utilities.h>
 #include <eigen_matrix_utils/eigen_matrix_utils.h>
 #include <eigen_matrix_utils/overloads.h>
 

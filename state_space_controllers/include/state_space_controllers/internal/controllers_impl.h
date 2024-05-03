@@ -3,8 +3,6 @@
 #ifndef STATE_SPACE_CONTROLLERS__CONTROLLERS_IMPL_H
 #define STATE_SPACE_CONTROLLERS__CONTROLLERS_IMPL_H
 
-#include <ros/console.h>
-//#include <rosparam_utilities/rosparam_utilities.h>
 #include <state_space_controllers/controllers.h>
 
 namespace eu = eigen_utils;

@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <Eigen/Core>
-#include <ros/node_handle.h>
 #include <state_space_systems/symbols.h>
 #include <state_space_systems/state_space_systems.h>
 

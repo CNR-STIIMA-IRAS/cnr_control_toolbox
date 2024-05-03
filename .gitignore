@@ -1,3 +1,4 @@
+
 # Prerequisites
 *.d
 
@@ -31,15 +32,15 @@
 *.out
 *.app
 
-.vs/
-*.kdev4
-kdev4/
-doc/
-**/doc
-**/__pycache__
 *~
-*.user
-*.user*
-*.json
+*txt.user*
+*kdev4*
 
-*.pyc
+build/
+devel/
+Testing/
+.cache/
+.vscode/
+
+compile_commands.json
+

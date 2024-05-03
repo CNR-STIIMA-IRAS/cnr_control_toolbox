@@ -1,0 +1,47 @@
+#############################
+## PRELIMINARIES           ##
+#############################
+cmake_minimum_required(VERSION 3.16.0)
+project(cnr_control_toolbox)
+
+option(BUILD_EXAMPLES ON)
+
+
+find_package(eigen_matrix_utils REQUIRED)
+
+# Add gtest based cpp test target and link libraries
+if(ENABLE_COVERAGE_TESTING)
+  find_package(code_coverage REQUIRED)
+  APPEND_COVERAGE_COMPILER_FLAGS()
+endif()
+
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+add_subdirectory(state_space_systems)
+add_subdirectory(kinematics_filters)
+add_subdirectory(state_space_controllers)
+add_subdirectory(state_space_filters)
+# add_subdirectory(frequency_identification)
+
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cnr_control_toolboxConfigVersion.cmake
+  VERSION 0.0.1
+  COMPATIBILITY AnyNewerVersion)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/cmake_config/cnr_control_toolboxConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/cnr_control_toolboxConfigVersion.cmake
+  DESTINATION "share/state_space_systems/cmake")
+
+# make uninstall
+add_custom_target("uninstall" COMMENT "Uninstall installed files")
+add_custom_command(
+    TARGET "uninstall"
+    POST_BUILD
+    COMMENT "Uninstall files with install_manifest.txt"
+    COMMAND xargs rm -vf < install_manifest.txt || echo Nothing in
+            install_manifest.txt to be uninstalled!
+)
+
