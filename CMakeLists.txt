@@ -27,7 +27,6 @@ add_subdirectory(state_space_systems)
 add_subdirectory(kinematics_filters)
 add_subdirectory(state_space_controllers)
 add_subdirectory(state_space_filters)
-# add_subdirectory(frequency_identification)
 
 
 include(CMakePackageConfigHelpers)
@@ -39,9 +38,6 @@ install(FILES
   ${CMAKE_SOURCE_DIR}/cmake_config/cnr_control_toolboxConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/cnr_control_toolboxConfigVersion.cmake
   DESTINATION "share/cnr_control_toolbox/cmake")
-
-
-
 
 
 # make uninstall

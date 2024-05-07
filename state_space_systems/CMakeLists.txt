@@ -54,7 +54,7 @@ install(DIRECTORY include/state_space_systems
   DESTINATION include)
 
 install(
-  TARGETS state_space_systems test_state_space_matrix #node_connection_test kdtree_test
+  TARGETS state_space_systems test_state_space_matrix
   EXPORT state_space_systemsTargets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
