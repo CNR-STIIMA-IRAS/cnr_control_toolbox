@@ -48,6 +48,15 @@ endif()
 # Mark cpp header files for installation
 install(DIRECTORY include/state_space_controllers
   DESTINATION include)
+  
+  
+install(
+  TARGETS state_space_controllers
+  EXPORT state_space_controllersTargets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 
 install(EXPORT state_space_controllersTargets

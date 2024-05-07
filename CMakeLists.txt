@@ -9,7 +9,7 @@ option(ENABLE_TESTING           "ENABLE TESTING" OFF)
 option(ENABLE_COVERAGE_TESTING  "ENABLE COVERAGE TESTING" OFF)
 option(COMPILE_EXAMPLE          "COMPILE THE EXAMPLE" OFF)
 
-find_package(Eigen3 REQUIRED COMPONENTS Core Dense)
+find_package(Eigen3 REQUIRED COMPONENTS Core Dense  Geometry)
 
 
 # Add gtest based cpp test target and link libraries

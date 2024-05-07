@@ -1,6 +1,6 @@
 include(CMakeFindDependencyMacro)
 
-find_dependency(Eigen3 REQUIRED COMPONENTS core)
+find_dependency(Eigen3 REQUIRED COMPONENTS Core Dense  Geometry)
 
 include("${CMAKE_CURRENT_LIST_DIR}/eigen_matrix_utilsTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/state_space_systemsTargets.cmake")
