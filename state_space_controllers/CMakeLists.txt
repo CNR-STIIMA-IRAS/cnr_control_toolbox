@@ -17,20 +17,20 @@ add_library(state_space_controllers::state_space_controllers ALIAS state_space_c
 ## Testing ##
 #############
 
-add_executable(test_controllers
+if(ENABLE_TESTING)
+  add_executable(test_controllers
    test/test_controllers.launch test/test_pid.cpp)
-target_link_libraries(test_controllers
+  target_link_libraries(test_controllers
   PUBLIC
   state_space_controllers::state_space_controllers
    GTest::gtest_main
-)
+  )
 
-
-target_compile_options(test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
-gtest_discover_tests(test_controllers)
-add_test(NAME test_controllers
-  COMMAND test_controllers)
-
+  target_compile_options(test_controllers PUBLIC $<$<CONFIG:Release>:-Ofast >)
+  gtest_discover_tests(test_controllers)
+  add_test(NAME test_controllers
+    COMMAND test_controllers)
+endif()
 
 if(ENABLE_COVERAGE_TESTING)
   set(COVERAGE_EXCLUDES "*/state_space_controllers/test*")
@@ -48,8 +48,8 @@ endif()
 # Mark cpp header files for installation
 install(DIRECTORY include/state_space_controllers
   DESTINATION include)
-  
-  
+
+
 install(
   TARGETS state_space_controllers
   EXPORT state_space_controllersTargets

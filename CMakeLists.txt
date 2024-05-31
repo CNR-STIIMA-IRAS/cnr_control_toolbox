@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16.0)
 project(cnr_control_toolbox)
 
 option(BUILD_EXAMPLES ON)
-option(ENABLE_TESTING           "ENABLE TESTING" OFF)
+option(ENABLE_TESTING           "ENABLE TESTING" ON)
 option(ENABLE_COVERAGE_TESTING  "ENABLE COVERAGE TESTING" OFF)
 option(COMPILE_EXAMPLE          "COMPILE THE EXAMPLE" OFF)
 
@@ -18,9 +18,11 @@ if(ENABLE_COVERAGE_TESTING)
   APPEND_COVERAGE_COMPILER_FLAGS()
 endif()
 
-find_package(GTest REQUIRED)
-include(GoogleTest)
-include(CTest)
+if(ENABLE_TESTING)
+  find_package(GTest REQUIRED)
+  include(GoogleTest)
+  include(CTest)
+endif()
 
 add_subdirectory(eigen_matrix_utils)
 add_subdirectory(state_space_systems)
@@ -29,6 +31,7 @@ add_subdirectory(state_space_controllers)
 add_subdirectory(state_space_filters)
 
 
+message(${CMAKE_CURRENT_BINARY_DIR})
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cnr_control_toolboxConfigVersion.cmake
   VERSION 0.0.1

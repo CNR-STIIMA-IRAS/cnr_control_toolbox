@@ -11,6 +11,9 @@
 #include <state_space_systems/integral_state_space_systems.h>
 #include <state_space_systems/integral_discrete_state_space_systems.h>
 
+#include <state_space_systems/dynamical_systems.h>
+#include <state_space_systems/numerical_integrators.h>
+
 constexpr unsigned int order=10; // system order
 constexpr unsigned int nin=1;    // number of inputs
 constexpr unsigned int nout=1;   // number of outputs
@@ -110,6 +113,64 @@ TEST(TestSuite, TestDiscreteStateSpaceDynamicButOne)
   EXPECT_TRUE(ss.setStateFromLastIO(u,y)); // initialize initial state value for dumpless startup
 
   EXPECT_NO_FATAL_FAILURE( y=ss.update(u) ); // computing one step, updating state and output
+}
+
+
+TEST(TestSuite, TestDynamicSystemAndIntegratorRK4)
+{
+  Eigen::VectorXd u(1);   //input vector
+  Eigen::VectorXd x(1);  //output vector
+
+  double xinitial=0.2;
+  x(0)=xinitial;
+  u(0)=1.0;
+  double step_time=0.1;
+  double coeff=-1;
+
+  EXPECT_NO_FATAL_FAILURE(eigen_control_toolbox::FirstOrderContinuousSystem sys(coeff));
+  eigen_control_toolbox::FirstOrderContinuousSystem sys(coeff);
+  EXPECT_NO_FATAL_FAILURE(sys.dynamicFcn(x,u));
+  EXPECT_NO_FATAL_FAILURE(sys.outputFcn(x,u));
+
+  EXPECT_NO_FATAL_FAILURE(eigen_control_toolbox::RungeKutta4 integrator;);
+  eigen_control_toolbox::RungeKutta4 integrator;
+
+  double time=0;
+  x(0)=xinitial;
+  u(0)=1.0;
+  double expect_output;
+  double output;
+  Eigen::VectorXd state=x;
+
+  for (int idx=0;idx<100;idx++)
+  {
+    time+=step_time;
+    state=integrator.integrate(sys,state,u,step_time);
+    output=sys.outputFcn(state,u)(0);
+    expect_output=std::exp(coeff*time)*xinitial+ (1.0-std::exp(coeff*time))*u(0);
+    EXPECT_TRUE(std::abs(output-expect_output)<std::max(1e-4,1e-4*std::abs(expect_output)));
+  }
+
+  eigen_control_toolbox::ContinuousDynamicSystem::Ptr csys=std::make_shared<eigen_control_toolbox::FirstOrderContinuousSystem>(coeff);
+  eigen_control_toolbox::Integrator::Ptr rk4=std::make_shared<eigen_control_toolbox::RungeKutta4>();
+  EXPECT_NO_FATAL_FAILURE(eigen_control_toolbox::DiscretizedDynamicSystem dsys(csys,rk4,step_time););
+  eigen_control_toolbox::DiscretizedDynamicSystem dsys(csys,rk4,step_time);
+
+  time=0;
+  state=x;
+  for (int idx=0;idx<100;idx++)
+  {
+    time+=step_time;
+    state=dsys.dynamicFcn(state,u);
+
+    output=dsys.outputFcn(state,u)(0);
+    expect_output=std::exp(coeff*time)*xinitial+ (1.0-std::exp(coeff*time))*u(0);
+    EXPECT_TRUE(std::abs(output-expect_output)<std::max(1e-4,1e-4*std::abs(expect_output)));
+  }
+
+
+
+
 }
 
 
